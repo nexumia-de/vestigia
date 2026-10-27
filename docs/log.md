@@ -1,0 +1,4 @@
+# Directory Update Log
+
+## 2026-10-27
+* **Creation**: Knowledge bundle for the new app Vestigia, a Phosh client for a self-hosted Dawarich server. [Roadmap](roadmap.md) M0–M5 (history view first, then tracking with the app open, then in the background), [feature inventory](features.md), [Dawarich API](dawarich-api.md) read from the Dawarich source at 1.18.1 (commit 60941b3: Bearer auth, login with 2FA, tracks/timeline/points, `/api/v1/settings/mobile` with its clamps, Overland batch format) with seven open questions for a real server, [tracking](tracking.md) pipeline and the open background problems on Phosh, [dev environment](dev-environment.md) (`dawarich.app` blocked by the proxy). Decisions: [app name](decisions/app-name.md), [Python](decisions/python-pygobject.md), [libshumate](decisions/map-libshumate.md), [no backend](decisions/no-backend.md), [licence](decisions/license.md); proposed: [Overland batches](decisions/upload-overland.md).
