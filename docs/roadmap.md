@@ -55,14 +55,17 @@ days open offline; empty, error and offline states; checked at 360×720.
 
 [Milestone M2](https://github.com/nexumia-de/vestigia/milestone/3)
 
-**Goal**: record the phone's position and upload it, without losing
-points when the network is gone.
+**Goal**: record the phone's position and upload it with a standard
+protocol, without losing points when the network is gone.
 
 **Exit criteria**: the [tracking](tracking.md) pipeline (portal, filter,
-SQLite queue, Overland uploader with back-off) with tests on recorded
-fixes and answers; tracking settings read from and written to
-`/api/v1/settings/mobile`; start/stop, status and the live track on the
-map; a recorded walk shows up correctly in the Dawarich web UI.
+SQLite store, uploader for Overland and OwnTracks HTTP with back-off)
+with tests on recorded fixes and answers; any upload target, filled in
+from the Dawarich account by default; local tracking settings, synced
+with `/api/v1/settings/mobile` for Dawarich; GPX export; start/stop,
+status and the live track on the map; a recorded walk shows up
+correctly in the Dawarich web UI and in a second Overland or OwnTracks
+receiver.
 
 # M3 – Background tracking on the phone
 

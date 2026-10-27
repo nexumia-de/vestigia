@@ -9,7 +9,9 @@ generated: { by: claude-code/2.1.311, at: 2026-10-27T16:30:00Z }
 # Scope
 
 Vestigia is a phone-first client for a Dawarich server: it shows the
-user's own history and records new positions. It does not replace the
+user's own history and records new positions. The history view needs
+Dawarich; the tracker only uses standard protocols and also works with
+other servers or none ([standard protocols](decisions/upload-protocols.md)). It does not replace the
 web UI for administration (imports, exports, users, family setup,
 webhooks); those stay in the browser.
 
@@ -23,7 +25,9 @@ Priorities: **P1** must have for the first usable release, **P2** next,
 | Day summary: distance, time moving, visits in a sidebar | P1 | `timeline` | M1 |
 | Own location on the map | P1 | location portal | M1 |
 | Record positions while the app is open, with an offline queue | P1 | `overland/batches` | M2 |
-| Tracking settings shared with the other devices (mode, filters, batch size) | P1 | `settings/mobile` | M2 |
+| Upload to any Overland or OwnTracks HTTP server instead of (or without) Dawarich | P1 | – | M2 |
+| Export recorded days as GPX | P2 | – | M2 |
+| Tracking settings, local or synced with Dawarich's other devices (mode, filters, batch size) | P1 | `settings/mobile` | M2 |
 | Tracking status: on/off, points waiting, last upload | P1 | – | M2 |
 | Record with the window closed and the screen off, start at login | P1 | Background and Inhibit portals | M3 |
 | Visits: confirm, decline, pick or rename the place | P2 | `visits`, `visits/{id}/possible_places`, `places` | M4 |

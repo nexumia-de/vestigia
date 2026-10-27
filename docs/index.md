@@ -17,7 +17,7 @@ Change history is in [log.md](log.md).
 # Design
 
 * [Dawarich API](dawarich-api.md) - Endpoints for login, history, tracking settings and uploads; verified in the source, open questions for a real server.
-* [Tracking](tracking.md) - Location portal, filter, SQLite queue and batch uploader; open problems of background operation on Phosh.
+* [Tracking](tracking.md) - Location portal, filter, SQLite store, uploader with standard protocols, GPX export; open problems of background operation on Phosh.
 
 # Development
 
@@ -25,4 +25,4 @@ Change history is in [log.md](log.md).
 
 # Decision records
 
-* [Decisions](decisions/index.md) - Name, language, map widget, no own backend, licence; proposed: Overland batches for uploads.
+* [Decisions](decisions/index.md) - Name, language, map widget, no own backend, licence; proposed: standard upload protocols.

@@ -5,4 +5,4 @@
 * [libshumate as map widget](map-libshumate.md) - OSM raster map, tracks as path layers, visits and places as markers.
 * [No own backend](no-backend.md) - Only the user's Dawarich server and the OSM tile server.
 * [AGPL-3.0 license](license.md) - Same licence and contributor terms as Cirro.
-* [Overland batches for uploads](upload-overland.md) - Proposed: queued points uploaded in batches; confirm with a real server in M0.
+* [Standard protocols for uploads](upload-protocols.md) - Proposed: the tracker speaks Overland and OwnTracks HTTP to any URL, Dawarich is one target; GPX export.

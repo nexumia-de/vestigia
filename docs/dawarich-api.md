@@ -96,9 +96,10 @@ Three ingest endpoints exist: OwnTracks (`/api/v1/owntracks/points`,
 one point per request), Overland (`/api/v1/overland/batches`, many
 points per request) and Traccar (`/api/v1/traccar/points`)[^routes].
 `/api/v1/points` for writes is deprecated in favour of the OwnTracks
-route[^docs-tracking]. Vestigia uses **Overland batches**, because it
-queues points while offline and uploads them in groups
-(see [tracking](tracking.md)).
+route[^docs-tracking]. With a Dawarich account Vestigia uses **Overland batches**, because it
+queues points while offline and uploads them in groups; the tracker
+itself only speaks standard protocols
+([standard protocols](decisions/upload-protocols.md), [tracking](tracking.md)).
 
 Overland batch body[^swagger][^overland]:
 
@@ -138,3 +139,12 @@ Overland batch body[^swagger][^overland]:
    vector renderer draw them? Relevant for multi-month ranges.
 7. Oldest server version Vestigia supports; how `/api/v1/health` reports
    the version.
+
+[^swagger]: Dawarich OpenAPI description (swagger/v1/swagger.yaml, 1.18.1, commit 60941b3)
+[^routes]: Dawarich routes (config/routes.rb, commit 60941b3)
+[^apictl]: Dawarich ApiController (app/controllers/api_controller.rb, commit 60941b3)
+[^overland]: Overland batches controller (commit 60941b3)
+[^points]: Points controller (commit 60941b3)
+[^mobile]: Mobile settings controller (commit 60941b3)
+[^docs-tracking]: Dawarich docs, Track your location
+[^rel-1101]: Dawarich 1.10.1 release notes
