@@ -28,6 +28,7 @@ settings (allowed domains).
   `tests/data/dawarich/`, with the API key, e-mail addresses and exact
   home positions removed (positions shifted, not invented).
 - Never replace missing live answers with invented samples.
+
 # Local Dawarich server
 
 `dev/dawarich/up.sh` starts Dawarich 1.18.1 with PostGIS and Redis

@@ -11,9 +11,10 @@ generated: { by: claude-code/2.1.311, at: 2026-10-27T16:30:00Z }
 Vestigia is a phone-first client for a Dawarich server: it shows the
 user's own history and records new positions. The history view needs
 Dawarich; the tracker only uses standard protocols and also works with
-other servers or none ([standard protocols](decisions/upload-protocols.md)). It does not replace the
-web UI for administration (imports, exports, users, family setup,
-webhooks); those stay in the browser.
+other servers or none
+([standard protocols](decisions/upload-protocols.md)). It does not
+replace the web UI for administration (imports, exports, users, family
+setup, webhooks); those stay in the browser.
 
 Priorities: **P1** must have for the first usable release, **P2** next,
 **P3** later or optional. Endpoints: [Dawarich API](dawarich-api.md).

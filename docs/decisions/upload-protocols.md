@@ -15,7 +15,7 @@ sources:
     title: OwnTracks booklet, JSON payloads (commit a0b5542)
     url: https://github.com/owntracks/booklet/blob/a0b55428cd4abaa2384babeb96dfa88b58c24fb6/docs/tech/json.md
   - id: gpx
-    title: GPX 1.1 Schema Documentation (topografix.com, proxy 403 on 2026-10-27, not read)
+    title: GPX 1.1 Schema Documentation (topografix.com, reachable since 2026-10-27)
     url: https://www.topografix.com/GPX/1/1/
 ---
 

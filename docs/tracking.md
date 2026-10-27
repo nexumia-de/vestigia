@@ -50,21 +50,21 @@ location portal ──fix──▶ filter ──point──▶ store (SQLite) �
 4. **Uploader**: knows nothing about Dawarich; it sends to an upload
    target (URL, protocol, credentials) chosen by the user or filled in
    from the Dawarich account ([standard protocols](decisions/upload-protocols.md)).
-   Overland: up to `batch_size` points per request when
-   the network is up (`GNetworkMonitor`), marks them uploaded only
-   after `{"result":"ok"}`; OwnTracks: one point per request, any `2xx`
-   counts. It backs off exponentially on errors. A `422`
-   batch is split to find and park the bad point instead of blocking the
-   queue. Whether a retry after a timeout creates duplicates on the
-   server is an open question in [Dawarich API](dawarich-api.md).
+   Overland: up to `batch_size` points per request when the network is
+   up (`GNetworkMonitor`), marked uploaded only after
+   `{"result":"ok"}`; OwnTracks: one point per request, any `2xx`
+   counts. It backs off exponentially on errors. A `422` batch is split
+   to find and park the bad point instead of blocking the queue.
+   Retrying after a lost answer is safe with Dawarich, which stores a
+   re-sent batch once ([Dawarich API](dawarich-api.md)); other servers
+   may differ.
 5. **Status in the UI**: tracking on/off, points waiting, last
    successful upload, last error as an `AdwBanner`.
-
 6. **GPX export**: a day or range from the store as a GPX 1.1 file
    through the file chooser portal.
 
-The pipeline modules (filter, store, uploader, GPX writer) stay free of GTK so they
-run in tests with recorded fixes and recorded server answers.
+The pipeline modules (filter, store, uploader, GPX writer) stay free of
+GTK so they run in tests with recorded fixes and recorded server answers.
 
 # Background operation on Phosh (open)
 
