@@ -35,9 +35,10 @@ sources:
 # Status of these facts
 
 Read from the Dawarich source at **1.18.1** (2026-10-26, commit
-`60941b3`) on 2026-10-27. **Not yet checked against a running server**;
-issue "Record real API answers" in M0 does that and stores the answers in
-`tests/data/`. Every running instance serves its own API description at
+`60941b3`) on 2026-10-27, then smoke-tested the same day against a local
+1.18.1 server from `dev/dawarich/` ([dev environment](dev-environment.md));
+results in "Checked on a local server" below. Recording the answers into
+`tests/data/` is issue "Record real API answers" in M0. Every running instance serves its own API description at
 `/api-docs`[^docs-tracking].
 
 # Authentication
@@ -123,22 +124,52 @@ Overland batch body[^swagger][^overland]:
 - Points at exactly (0, 0) are rejected by every ingest path since
   1.10.1[^rel-1101]; the app drops them before queueing.
 
+# Checked on a local server (1.18.1, 2026-10-27)
+
+With curl against `dev/dawarich/` and a fresh account:
+
+- `GET /api/v1/health` → `200 {"status":"ok"}`, version in the header
+  `X-Dawarich-Version: 1.18.1` (also on every authenticated answer).
+- `Authorization: Bearer <key>` works for `users/me`, `points`,
+  `settings/mobile`, `overland/batches` and `owntracks/points`; a wrong
+  key gives `401`. HTTP basic auth (the OwnTracks app's own method) is
+  **not** accepted (`401`); the OwnTracks target must send Bearer.
+- `POST /api/v1/auth/login` without 2FA → `200` with `user_id`, `email`,
+  `api_key`, `status`, `plan` (self-hosted: `pro`), `active_until`.
+- `GET /api/v1/settings/mobile` on a new account → `{"settings":{},
+  "updated_at":null, …}`: no defaults, the app must bring its own.
+  `PATCH` with `{"settings":{…}}` clamps (`distance_filter` 50000 →
+  10000) and silently drops an unknown `tracking_mode`.
+- Overland batch → `201 {"result":"ok"}`; the **same batch sent twice
+  stores the points once**, so retrying after a lost answer is safe. A
+  batch of 1001 points was accepted. A bad timestamp → `422 {"error":
+  "Timestamp must be a date and time or Unix seconds"}`. A (0, 0) point
+  is answered with `201` but not stored.
+- OwnTracks `_type: location` → `200 []`, stored with `tracker_id` from
+  `tid`.
+- Points are readable a few seconds after upload; `GET /api/v1/points`
+  sends `X-Current-Page` and `X-Total-Pages`.
+- `GET /api/v1/tracks` stayed empty for at least 5 minutes after
+  uploading points from earlier in the day. Track generation is a
+  background job (`Tracks::RealtimeGenerationJob`, debounced 45 s, plus a
+  run every 12 h); why it produced nothing here is open.
+
 # Open questions
 
-1. Answers and status codes of a real server for all endpoints above
-   (M0 recording).
-2. Is a re-sent batch deduplicated (same timestamp and position)? This
-   decides whether the uploader may retry after a timeout without
-   creating duplicates.
-3. Largest batch the server accepts; response of the points limit.
+1. Record answers for all endpoints above into `tests/data/` (M0),
+   including login with 2FA and `timeline`.
+2. ~~Is a re-sent batch deduplicated?~~ Yes (local server, 2026-10-27).
+3. Largest batch the server accepts (1001 worked); answer of the points
+   limit on hosted instances.
 4. Units of `distance_filter`, `time_filter`, `accuracy`,
    `track_break`; behaviour of `significant` mode in the official app.
-5. When are tracks computed from new points (immediately or by a job)?
-   The day view must handle "points but no tracks yet".
+5. Tracks are computed by a background job, but none appeared on the
+   local server: find out what triggers them. The day view must handle
+   "points but no tracks yet".
 6. Do the MVT tile endpoints accept the Bearer header, and can libshumate's
    vector renderer draw them? Relevant for multi-month ranges.
-7. Oldest server version Vestigia supports; how `/api/v1/health` reports
-   the version.
+7. Oldest server version Vestigia supports (the version is in
+   `X-Dawarich-Version`).
 
 [^swagger]: Dawarich OpenAPI description (swagger/v1/swagger.yaml, 1.18.1, commit 60941b3)
 [^routes]: Dawarich routes (config/routes.rb, commit 60941b3)

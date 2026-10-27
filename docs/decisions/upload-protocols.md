@@ -23,7 +23,8 @@ sources:
 
 Proposed (2026-10-27) by the owner's request "build tracking on
 standards, not on Dawarich's own API". To be confirmed with real
-servers in M0 (duplicates on retry, largest batch).
+servers in M0. Dawarich side checked on a local 1.18.1 server on
+2026-10-27.
 
 # Context
 
@@ -45,10 +46,11 @@ should wake the radio as rarely as possible.
 2. Protocols: **Overland** (default; a POST with
    `{"locations": [GeoJSON points]}`, confirmed by `{"result":"ok"}`,
    which Dawarich sends[^overland]) and **OwnTracks HTTP**
-   (`_type: location` JSON[^owntracks-json], one point per POST, HTTP basic auth, any `2xx` counts as received and
-   the answer is usually `[]`[^owntracks-http]), for servers that only
-   speak OwnTracks. Traccar Client JSON only if a user needs it
-   (backlog).
+   (`_type: location` JSON[^owntracks-json], one point per POST, HTTP
+   basic auth[^owntracks-http] or a Bearer token (Dawarich accepts only
+   Bearer), any `2xx` counts as received and the answer is usually
+   `[]`[^owntracks-http]), for servers that only speak OwnTracks.
+   Traccar Client JSON only if a user needs it (backlog).
 3. When the account in the app is a Dawarich server, the target is
    filled in from it (`/api/v1/overland/batches`, Bearer key), and the
    tracking settings may sync with `/api/v1/settings/mobile`. Without a
@@ -67,7 +69,8 @@ should wake the radio as rarely as possible.
 - A `422` (Dawarich) rejects a whole Overland batch; the uploader splits
   it to isolate the bad point.
 - Whether a retry after a lost answer duplicates points depends on the
-  server; M0 checks Dawarich.
+  server; Dawarich 1.18.1 stores a re-sent batch once (checked on a
+  local server, [Dawarich API](../dawarich-api.md)).
 
 [^overland]: Overland GPS Tracker README
 [^owntracks-http]: OwnTracks booklet, HTTP mode
