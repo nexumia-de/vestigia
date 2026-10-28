@@ -1,0 +1,73 @@
+# Local Dawarich server for development and for recording API answers
+# (docs/dev-environment.md). Based on Dawarich's docker/docker-compose.yml
+# at 1.18.1, pinned by digest. Never expose it: it uses throw-away secrets
+# from .env, written by up.sh.
+name: vestigia-dawarich
+
+services:
+  redis:
+    image: redis:8-alpine@sha256:47b08295737773de3b711fb86f13ae802f5074e96a9a2d29f5f80164ac08c046 # 8.10.3
+    command: redis-server --save "" --appendonly no
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      retries: 20
+
+  db:
+    image: postgis/postgis:17-3.5-alpine@sha256:894f570c0cf0664ed5576a8fd5d5bfb8fb1b19d592885b686c3a88c8bd90c41f
+    shm_size: 1G
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?run up.sh}
+      POSTGRES_DB: dawarich
+    volumes:
+      - db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d dawarich"]
+      interval: 5s
+      retries: 30
+
+  app:
+    image: freikin/dawarich:1.18.1@sha256:a2b93286a973b2e4b55d6a1ebd8009a65b8624639687ca95e909d0aac27324f5
+    entrypoint: web-entrypoint.sh
+    command: ["bin/rails", "server", "-p", "3000", "-b", "::"]
+    ports:
+      - "127.0.0.1:${DAWARICH_PORT:-3000}:3000"
+    volumes:
+      - storage:/var/app/storage
+    environment:
+      RAILS_ENV: production
+      REDIS_URL: redis://redis:6379
+      DATABASE_HOST: db
+      DATABASE_PORT: 5432
+      DATABASE_USERNAME: postgres
+      DATABASE_PASSWORD: ${DB_PASSWORD:?run up.sh}
+      DATABASE_NAME: dawarich
+      APPLICATION_HOSTS: localhost,::1,127.0.0.1
+      APPLICATION_PROTOCOL: http
+      TIME_ZONE: Europe/Berlin
+      SECRET_KEY_BASE: ${SECRET_KEY_BASE:?run up.sh}
+      RAILS_LOG_TO_STDOUT: "true"
+      SELF_HOSTED: "true"
+      STORE_GEODATA: "false"
+      SIDEKIQ_EMBEDDED: "true"
+      WEB_CONCURRENCY: "0"
+      BACKGROUND_PROCESSING_CONCURRENCY: 2
+      PROMETHEUS_EXPORTER_ENABLED: "false"
+      # Needed to test two-factor login.
+      OTP_ENCRYPTION_PRIMARY_KEY: ${OTP_PRIMARY:?run up.sh}
+      OTP_ENCRYPTION_DETERMINISTIC_KEY: ${OTP_DETERMINISTIC:?run up.sh}
+      OTP_ENCRYPTION_KEY_DERIVATION_SALT: ${OTP_SALT:?run up.sh}
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO - http://127.0.0.1:3000/api/v1/health | grep -q ok"]
+      interval: 10s
+      retries: 60
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+volumes:
+  db:
+  storage:
