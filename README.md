@@ -1,6 +1,8 @@
-# Vestigia
+# Travel Log (Vestigia)
 
-*Vestigia* is Latin for footprints, traces.
+*Travel Log* is the name you see in the app grid; the code name
+*Vestigia*, Latin for footprints, traces, is used for the repository,
+app id and package.
 
 Adaptive GTK4/libadwaita app for [Phosh](https://phosh.mobi/) phones
 and the desktop that works with a self-hosted
