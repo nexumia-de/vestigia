@@ -1,5 +1,8 @@
 # Directory Update Log
 
+## 2026-11-08
+* **Update**: `AGENTS.md` imports `agents/core.md` and `agents/gtk-app.md` from phosh-toolkit instead of its whole `AGENTS.md`; repeated shared rules removed (toolkit decision "lean agent rules", to use fewer tokens per session).
+
 ## 2026-11-06
 * **Update**: [App name](decisions/app-name.md): the owner chose the visible name **Travel Log** for the app grid, metainfo, window title and About dialog (with `GenericName` "Location History"); the code name Vestigia stays for the repository, app id, package, docs and `User-Agent`. The scaffold (#1) starts with it.
 
