@@ -1,4 +1,5 @@
-@../phosh-toolkit/AGENTS.md
+@../phosh-toolkit/agents/core.md
+@../phosh-toolkit/agents/gtk-app.md
 
 # Vestigia
 
@@ -6,18 +7,13 @@ Location history and tracking app for Phosh, a client for a
 self-hosted [Dawarich](https://dawarich.app/) server. Two jobs: show the
 user's history (tracks, visits, stats) on a map, and record the phone's
 position and upload it to that server or to any Overland or OwnTracks
-receiver. The shared rules in ../phosh-toolkit/AGENTS.md apply as
-well.
+receiver.
 
 - App id: `de.nexumia.Vestigia`. Visible name: **Travel Log** (chosen by
   the owner on 2026-11-06, [decision](docs/decisions/app-name.md)); the
   code name Vestigia stays for the repository, app id, package, docs and
   `User-Agent`.
-- Plan: work items are [issues](https://github.com/nexumia-de/vestigia/issues)
-  in [milestones](https://github.com/nexumia-de/vestigia/milestones);
-  goals per milestone are in [docs/roadmap.md](docs/roadmap.md). Work on
-  the issues of the current milestone first; do not start later
-  milestones without asking.
+- Plan: [milestones](https://github.com/nexumia-de/vestigia/milestones); goals in [docs/roadmap.md](docs/roadmap.md).
 - The Dawarich API and its open questions:
   [docs/dawarich-api.md](docs/dawarich-api.md). Verify every unverified
   fact there against a real server (or the Dawarich source at a recorded
