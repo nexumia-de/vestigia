@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>de.nexumia.Vestigia</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>AGPL-3.0-or-later</project_license>
+  <name>Travel Log</name>
+  <summary>Location history and tracking for Dawarich</summary>
+  <description>
+    <p>
+      Travel Log works with your own Dawarich server, on a Phosh phone
+      and on the desktop. It will show where you have been on a map and
+      record your phone's position for your server.
+    </p>
+    <p>
+      This first version is only the empty app; connecting to a server
+      comes next.
+    </p>
+    <p>
+      Travel Log is an independent project and not affiliated with
+      Dawarich. Your location data goes only to the server you configure.
+    </p>
+  </description>
+  <developer id="de.nexumia">
+    <name>suitably</name>
+  </developer>
+  <url type="homepage">https://github.com/nexumia-de/vestigia</url>
+  <url type="bugtracker">https://github.com/nexumia-de/vestigia/issues</url>
+  <url type="vcs-browser">https://github.com/nexumia-de/vestigia</url>
+  <url type="donation">https://liberapay.com/suitably</url>
+  <launchable type="desktop-id">de.nexumia.Vestigia.desktop</launchable>
+  <content_rating type="oars-1.1"/>
+  <branding>
+    <color type="primary" scheme_preference="light">#ddd3f7</color>
+    <color type="primary" scheme_preference="dark">#33206e</color>
+  </branding>
+  <categories>
+    <category>Utility</category>
+    <category>Maps</category>
+  </categories>
+  <recommends>
+    <display_length compare="ge">360</display_length>
+  </recommends>
+  <supports>
+    <control>pointing</control>
+    <control>keyboard</control>
+    <control>touch</control>
+  </supports>
+  <releases>
+    <release version="0.1.0" date="2026-11-16">
+      <description>
+        <p>First version: the empty app, ready to install, without a server connection yet.</p>
+      </description>
+    </release>
+  </releases>
+</component>

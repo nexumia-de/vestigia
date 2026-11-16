@@ -1,0 +1,22 @@
+name: Flatpak
+on:
+  push:
+    branches: [main]
+    # v<version> publishes the stable app (phosh-toolkit docs/flatpak-workflow.md).
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+jobs:
+  flatpak:
+    permissions:
+      contents: write
+    uses: nexumia-de/phosh-toolkit/.github/workflows/flatpak.yml@main
+    with:
+      manifest: de.nexumia.Vestigia.yml
+      # Tags publish Travel Log, every push to main publishes Travel Log (Nightly);
+      # nexumia-de/phosh-apps serves both (phosh-toolkit docs/flatpak-workflow.md).
+      release: true
+      nightly: true
+      publish-repo: nexumia-de/phosh-apps
+    secrets:
+      PUBLISH_TOKEN: ${{ secrets.PUBLISH_TOKEN }}

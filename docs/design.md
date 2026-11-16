@@ -1,0 +1,53 @@
+---
+type: Concept
+title: Visual design
+description: Stock libadwaita with Vestigia's track-violet accent, why violet, the screens at 360 px and on the desktop, and the review checklist.
+tags: [design, accent, adaptive, libadwaita]
+resource: ../vestigia/style.css
+generated: { by: claude-code/2.1.326, at: 2026-11-16T23:59:00Z }
+sources:
+  - id: accents
+    resource: ../../phosh-toolkit/docs/decisions/app-accent-colours.md
+    title: phosh-toolkit decision "One accent colour per app"
+---
+
+Vestigia follows the toolkit's [visual design](../../phosh-toolkit/docs/design.md)
+and [adaptive UI](../../phosh-toolkit/docs/adaptive-libadwaita.md) rules.
+
+# Accent
+
+Track violet `#6741d9` with white text (contrast 6.3:1), set only
+through `--accent-bg-color`/`--accent-fg-color` in `vestigia/style.css`
+(plus `@define-color` for libadwaita 1.5 hosts)[^accents]. Light and
+dark follow the system; Preferences → Appearance → Style offers Follow
+System / Light / Dark (`phosh_toolkit.style`). The metainfo branding
+colours are `#ddd3f7` (light) and `#33206e` (dark).
+
+Why violet (chosen 2026-11-16 for the scaffold):
+
+- Distinct from the other apps: Jukebox (Nauta) teal `#127a8a`, Home
+  Cinema (Ephyra) Jellyfin blue `#00a4dc`, Watch Health (Pulsus) pulse
+  red `#c6345a`; Weather Radar (Cirro) and Nuntius set no own accent
+  (checked in their style sheets on 2026-11-16).
+- The accent will also draw the track on the map (M1). OSM's standard
+  tiles use green (parks, woods), blue (water), orange and yellow
+  (roads) and red (motorways, POIs); a saturated violet line stands out
+  against all of them.
+
+# Screens
+
+| Screen | Narrow (≤ 600 sp) | Wide |
+|---|---|---|
+| Start (placeholder until M1) | `AdwStatusPage` with the app's symbolic icon, "Nothing Here Yet" | same |
+| Preferences | `AdwPreferencesDialog`, Appearance → Style | same |
+
+Every page is pushed onto one `AdwNavigationView`. The app icon (a
+trail of steps across a map to a place marker) and its symbolic variant
+are drawn for Vestigia, AGPL like the app; no Dawarich logo.
+
+# Review checklist
+
+The toolkit's checklist, and for Vestigia: no horizontal scrolling at
+360 px, icon-only buttons (menu) have tooltips and labels.
+
+[^accents]: phosh-toolkit decision "One accent colour per app"

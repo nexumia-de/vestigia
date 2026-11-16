@@ -10,7 +10,9 @@ and the desktop that works with a self-hosted
 (tracks, visits, statistics) on a map, and record your phone's position
 and upload it to your own server.
 
-Status: planning (milestone M0). Nothing to install yet. See the
+Status: milestone M0. The app is scaffolded but does nothing yet; once
+the first release is tagged it installs from the shared Flatpak
+repository at <https://flatpak.nexumia.de/>. See the
 [milestones](https://github.com/nexumia-de/vestigia/milestones) and
 [docs/roadmap.md](docs/roadmap.md).
 

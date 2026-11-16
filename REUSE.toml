@@ -9,4 +9,9 @@ precedence = "aggregate"
 SPDX-FileCopyrightText = "2026 suitably"
 SPDX-License-Identifier = "AGPL-3.0-or-later"
 
-# The CC0 annotation for data/*.metainfo.xml comes with the scaffold (M0).
+# AppStream metadata is CC0 so stores and distributions can reuse it.
+[[annotations]]
+path = "data/*.metainfo.xml"
+precedence = "override"
+SPDX-FileCopyrightText = "2026 suitably"
+SPDX-License-Identifier = "CC0-1.0"

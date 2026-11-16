@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Travel Log
+GenericName=Location History
+Comment=Location history and tracking for Dawarich
+Exec=vestigia
+Icon=de.nexumia.Vestigia
+Terminal=false
+Categories=GTK;Utility;Maps;
+Keywords=vestigia;dawarich;location;history;tracking;gps;track;trip;travel;timeline;
+StartupNotify=true
+X-Purism-FormFactor=Workstation;Mobile;

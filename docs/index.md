@@ -18,10 +18,12 @@ Change history is in [log.md](log.md).
 
 * [Dawarich API](dawarich-api.md) - Endpoints for login, history, tracking settings and uploads; verified in the source, open questions for a real server.
 * [Tracking](tracking.md) - Location portal, filter, SQLite store, uploader with standard protocols, GPX export; open problems of background operation on Phosh.
+* [Visual design](design.md) - Stock libadwaita with the track-violet accent and why, the screens, the review checklist.
 
 # Development
 
 * [Development environment](dev-environment.md) - Required hosts and how tests work without a server.
+* [Bundled dependencies](dependencies.md) - protobuf-c, libshumate and phosh-toolkit's package in the Flatpak, with licences and licence files.
 
 # Decision records
 
