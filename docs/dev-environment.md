@@ -43,3 +43,26 @@ two-factor login can be tested. Stop and wipe with
 Works in the cloud container (checked 2026-10-27): the Docker daemon is
 not running there by default, `up.sh` starts it; the first start pulls
 about 1 GB of images and takes about two minutes.
+
+# Building and checking the app
+
+Checked on 2026-11-16 in the cloud container:
+
+- Tests: `xvfb-run -a /usr/bin/python3.12 -m pytest -q` (Ubuntu's
+  `python3-pytest`; the default `python3` has no `gi`). Without a
+  display `tests/test_ui.py` is skipped.
+- `reuse lint` needs reuse 4 or newer for `REUSE.toml`; Ubuntu 24.04's
+  `reuse` 2.1 reports every file as unlicensed. A venv with
+  `pip install reuse` (6.3.0) passes.
+- Flatpak: `flatpak-builder --force-clean --disable-rofiles-fuse
+  --install-deps-from=flathub --repo=<repo> <build-dir>
+  de.nexumia.Vestigia.yml` (GNOME 51 SDK from Flathub; libshumate from
+  `download.gnome.org`, protobuf-c from GitHub releases).
+- Screenshots of the installed Flatpak with
+  `../phosh-toolkit/scripts/screenshot.sh -- flatpak run de.nexumia.Vestigia`
+  need `XDG_RUNTIME_DIR=/run/user/0` (created, mode 700) and a system
+  bus (`mkdir -p /run/dbus && dbus-daemon --system --fork`), as the
+  toolkit's screenshot doc says. Under Broadway, symbolic icons drawn
+  with paths look blurry at status-page size, Adwaita's own
+  `mark-location-symbolic` as well; screenshots from the source tree
+  (host GTK) are sharp.
