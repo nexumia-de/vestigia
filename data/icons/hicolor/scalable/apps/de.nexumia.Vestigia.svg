@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <!-- Travel Log: a trail of steps across a map to a place marker.
+       Drawn for Vestigia (AGPL-3.0-or-later); no Dawarich logo. -->
+  <rect x="12" y="18" width="104" height="98" rx="18" fill="#c0bfbc"/>
+  <rect x="12" y="12" width="104" height="100" rx="18" fill="#f6f5f4"/>
+  <path d="M12 82 C34 74 46 92 70 84 S104 76 116 82 V94 C116 104 108 112 98 112 H30 C20 112 12 104 12 94 Z" fill="#99c1f1"/>
+  <path d="M30 12 H62 C58 30 40 38 12 40 V30 C12 20 20 12 30 12 Z" fill="#8ff0a4"/>
+  <g fill="#6741d9">
+    <circle cx="26" cy="98" r="5"/>
+    <circle cx="40" cy="90" r="5"/>
+    <circle cx="52" cy="79" r="5"/>
+    <circle cx="66" cy="72" r="5"/>
+    <circle cx="78" cy="70" r="5"/>
+    <path d="M90 22 A20 20 0 0 0 70 42 C70 56 90 76 90 76 C90 76 110 56 110 42 A20 20 0 0 0 90 22 Z"/>
+  </g>
+  <circle cx="90" cy="42" r="8" fill="#ffffff"/>
+</svg>

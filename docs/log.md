@@ -1,5 +1,8 @@
 # Directory Update Log
 
+## 2026-11-16
+* **Update**: App scaffolded from the toolkit skeleton (#1): package `vestigia` (window with a placeholder status page, preferences with the style choice, About dialog with "Support Development" and "Not affiliated with Dawarich"), meson build with the nightly profile, desktop file and CC0 metainfo, own full-colour and symbolic icon, Flatpak manifest `de.nexumia.Vestigia.yml` (network only; protobuf-c and libshumate as in Cirro, phosh-toolkit v0.4.0), workflows (Flatpak with release and nightly to phosh-apps, release, tests, update check), Dependabot for Actions and `dev/dawarich` images, ruleset, `release.toml`, REUSE annotation for the metainfo. New: [visual design](design.md) (accent `#6741d9`, chosen so the track stands out on OSM tiles and differs from the other apps), [bundled dependencies](dependencies.md); build and screenshot commands that work in the cloud container in [dev environment](dev-environment.md).
+
 ## 2026-11-08
 * **Update**: `AGENTS.md` imports `agents/core.md` and `agents/gtk-app.md` from phosh-toolkit instead of its whole `AGENTS.md`; repeated shared rules removed (toolkit decision "lean agent rules", to use fewer tokens per session).
 

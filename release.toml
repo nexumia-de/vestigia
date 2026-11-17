@@ -1,0 +1,7 @@
+# Release automation: changelog fragments, release pull request and
+# screenshots (phosh-toolkit docs/releases.md).
+metainfo = "data/de.nexumia.Vestigia.metainfo.xml"
+version-files = ["meson.build", "vestigia/__init__.py"]
+
+# Screenshots come with the first feature worth showing (M1, the day
+# view), taken from recorded server answers, never live data.
