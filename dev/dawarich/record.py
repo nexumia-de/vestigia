@@ -35,6 +35,9 @@ DAY = ("2024-04-21T00:00:00Z", "2024-04-21T23:59:59Z")
 EMPTY_DAY = ("2024-04-20T00:00:00Z", "2024-04-20T23:59:59Z")
 KEPT_HEADERS = ("content-type", "x-dawarich-version", "x-dawarich-response",
                 "x-current-page", "x-total-pages")
+# Overridden by dev/owntracks/record.py.
+SERVER_NAME = ""
+BY = "dev/dawarich/record.py"
 USER_AGENT = "Vestigia-recorder (+https://github.com/nexumia-de/vestigia)"
 NS = {"g": "http://www.topografix.com/GPX/1/1",
       "osmand": "https://osmand.net"}
@@ -80,9 +83,10 @@ def save(name, answer, note=""):
     OUT.mkdir(parents=True, exist_ok=True)
     answer = redact(answer)
     answer["recorded"] = {
-        "server": "Dawarich " + answer["headers"].get("x-dawarich-version", "?"),
+        "server": SERVER_NAME or
+        "Dawarich " + answer["headers"].get("x-dawarich-version", "?"),
         "at": datetime.now(timezone.utc).date().isoformat(),
-        "by": "dev/dawarich/record.py",
+        "by": BY,
     }
     if note:
         answer["recorded"]["note"] = note

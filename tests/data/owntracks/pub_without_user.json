@@ -1,0 +1,26 @@
+{
+ "request": {
+  "method": "POST",
+  "path": "/pub",
+  "query": {},
+  "body": {
+   "_type": "location",
+   "lat": 37.1685682,
+   "lon": -3.596212,
+   "alt": 719,
+   "acc": 5,
+   "tid": "vg",
+   "tst": 1713690451
+  }
+ },
+ "status": 200,
+ "headers": {
+  "content-type": "application/json; charset=utf-8"
+ },
+ "body": [],
+ "recorded": {
+  "server": "OwnTracks Recorder 1.0.7",
+  "at": "2026-11-22",
+  "by": "dev/owntracks/record.py"
+ }
+}

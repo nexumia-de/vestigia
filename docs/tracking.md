@@ -57,17 +57,29 @@ location portal ──fix──▶ filter ──point──▶ store (SQLite) �
    (`parked`), nothing is deleted on upload. Pruning removes points older
    than the keep time (setting, default 30 days) only once the current
    target has them or refused them; without a target, by age alone.
-4. **Uploader**: knows nothing about Dawarich; it sends to an upload
-   target (URL, protocol, credentials) chosen by the user or filled in
-   from the Dawarich account ([standard protocols](decisions/upload-protocols.md)).
-   Overland: up to `batch_size` points per request when the network is
-   up (`GNetworkMonitor`), marked uploaded only after
-   `{"result":"ok"}`; OwnTracks: one point per request, any `2xx`
-   counts. It backs off exponentially on errors. A `422` batch is split
-   to find and park the bad point instead of blocking the queue.
-   Retrying after a lost answer is safe with Dawarich, which stores a
-   re-sent batch once ([Dawarich API](dawarich-api.md)); other servers
-   may differ.
+4. **Uploader** (`vestigia/tracker/uploader.py`, `target.py`,
+   `protocols.py`, no GTK): knows nothing about Dawarich; it sends to an
+   upload target (URL, protocol, Bearer / basic / no auth, secret in the
+   keyring). With a Dawarich account the target is filled in from it
+   (`vestigia/api/upload_target.py`: `/api/v1/overland/batches`, the
+   account key as Bearer) unless the user enters another one.
+   - Overland: up to `batch_size` (1–1000) points per POST
+     `{"locations": [...]}`, marked uploaded only after
+     `{"result":"ok"}`; any other 2xx is not a confirmation.
+   - OwnTracks HTTP: one `_type: location` per POST, any 2xx counts;
+     `X-Limit-U`/`X-Limit-D` name user and device for the OwnTracks
+     Recorder, which answers `200 []` even to incomplete or invalid
+     bodies (recorded from Recorder 1.0.7 in `tests/data/owntracks/`).
+   - `400`/`422`: the batch is split in halves until the bad point is
+     found; it is parked for that target and the rest goes on.
+   - `401`: the run stops and the status says the target rejected the
+     credentials (on a hosted Dawarich also its points limit); no retry
+     until the target or key changes.
+   - Network and server errors: the run stops, the next one follows
+     after 30 s, doubling up to an hour (`backoff.py`), or at once when
+     `GNetworkMonitor` reports the network back (`scheduler.py`).
+   - A retry after a lost answer re-sends the batch: safe with
+     Dawarich, which stores a re-sent batch once (recorded, issue 2).
 5. **Status in the UI**: tracking on/off, points waiting, last
    successful upload, last error as an `AdwBanner`.
 6. **GPX export**: a day or range from the store as a GPX 1.1 file
