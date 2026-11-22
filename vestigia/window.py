@@ -41,6 +41,7 @@ class Window(Adw.ApplicationWindow):
         menu.append("Statistics", "app.statistics")
         menu.append("Export Day as GPX…", "app.export-gpx")
         menu.append("Preferences", "app.preferences")
+        menu.append("Report a Problem…", "app.report-problem")
         menu.append(f"About {NAME}", "app.about")
         return menu
 

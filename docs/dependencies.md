@@ -12,8 +12,8 @@ sources:
     resource: https://download.gnome.org/sources/libshumate/1.7/libshumate-1.7.0.tar.xz
     title: libshumate 1.7.0 tarball (COPYING, meson.build)
   - id: toolkit
-    resource: https://github.com/nexumia-de/phosh-toolkit/tree/v0.7.0
-    title: phosh-toolkit v0.7.0 (LICENSE, flatpak/libshumate.yml)
+    resource: https://github.com/nexumia-de/phosh-toolkit/tree/v0.8.1
+    title: phosh-toolkit v0.8.1 (LICENSE, flatpak/libshumate.yml)
 ---
 
 # Rules
@@ -29,7 +29,7 @@ installs no licence files.
 |---|---|---|---|---|
 | `protobuf-c` | 1.5.2 | BSD-2-Clause[^protobuf-c] | `LICENSE` → `/app/share/licenses/<app id>/protobuf-c/` | in phosh-toolkit (`flatpak/libshumate.yml`) |
 | `libshumate` | 1.7.0 | LGPL-2.1-or-later[^libshumate] | `COPYING` → `/app/share/licenses/<app id>/libshumate/` | in phosh-toolkit (`flatpak/libshumate.yml`) |
-| `phosh-toolkit` | tag `v0.7.0` (commit `13275a7`) | GPL-3.0-or-later[^toolkit] (own code, same author) | `LICENSE` → `/app/share/licenses/<app id>/phosh-toolkit/` | git tag checker |
+| `phosh-toolkit` | tag `v0.8.1` (commit `1910057`) | GPL-3.0-or-later[^toolkit] (own code, same author) | `LICENSE` → `/app/share/licenses/<app id>/phosh-toolkit/` | git tag checker |
 
 protobuf-c is only there because libshumate needs it for vector tiles.
 Both come from the toolkit's shared module file
@@ -59,4 +59,4 @@ source ([Dawarich API](dawarich-api.md)).
 
 [^protobuf-c]: protobuf-c 1.5.2 tarball (LICENSE)
 [^libshumate]: libshumate 1.7.0 tarball (COPYING, meson.build)
-[^toolkit]: phosh-toolkit v0.7.0 (LICENSE, flatpak/libshumate.yml)
+[^toolkit]: phosh-toolkit v0.8.1 (LICENSE, flatpak/libshumate.yml)

@@ -12,6 +12,7 @@ from vestigia import (APP_ID, NAME, NIGHTLY, REPO_URL,  # noqa: E402
                       SUPPORT_URL, VERSION_LABEL)
 
 log = logging.getLogger("vestigia")
+REPO = "nexumia-de/vestigia"
 
 
 class Application(Adw.Application):
@@ -69,6 +70,14 @@ class Application(Adw.Application):
         self.tracker = Tracker(self.account, config.Store())
         from vestigia.tracking.background import Keeper
         self.keeper = Keeper(self, self.tracker)
+        # "Report a Problem…" (phosh-toolkit docs/feedback.md). The token
+        # goes to the app's own keyring, which tests and demo mode keep in
+        # memory; demo mode's recorded HTTP stand-in must not send it.
+        from phosh_toolkit import feedback
+        feedback.install(self, repo=REPO, app_name=NAME,
+                         version=VERSION_LABEL,
+                         keyring=self.account.secrets.keyring,
+                         client=None if demo.enabled() else self.account.http)
 
     def do_command_line(self, command_line):
         if command_line.get_options_dict().contains("background"):
@@ -134,19 +143,23 @@ class Application(Adw.Application):
             PreferencesDialog(window).present(window)
 
     def _on_about(self, *_):
+        self.about_dialog().present(self._window())
+
+    def about_dialog(self):
+        from phosh_toolkit import feedback
         dialog = Adw.AboutDialog(
             application_name=NAME,
             application_icon=APP_ID,
             version=VERSION_LABEL,
             developer_name="suitably",
             website=REPO_URL,
-            issue_url=f"{REPO_URL}/issues",
+            issue_url=feedback.issue_url(REPO, VERSION_LABEL),
             license_type=Gtk.License.AGPL_3_0,
             comments="Your location history from your own Dawarich server. "
                      "Not affiliated with Dawarich.",
         )
         dialog.add_link("Support Development", SUPPORT_URL)
-        dialog.present(self._window())
+        return dialog
 
 
 def main(argv):
