@@ -1,6 +1,7 @@
 # Directory Update Log
 
 ## 2026-11-22
+* **Update**: [Roadmap](roadmap.md) and [features](features.md): M5 extras (hexagons, photos, family) and the backlog (notes, editing points, Traccar uploads) closed as not planned, with the reason; M1's sidebar wording follows what was built.
 * **Update**: Ranges and calendar marks (#24): day, week and month in the period popover (`vestigia/day/period.py`, `day_bar.py`), tracks and summed timeline for a range, raw points only for single days, only single days cached; the calendar marks days with data from `tracked_months` and one timeline request per month (`marks.py`). Decision [range view](decisions/range-view.md): GeoJSON, no vector tiles, nothing longer than a month for now.
 * **Update**: Statistics (#23): main menu → Statistics (`vestigia/stats/`): totals and distance per month from `/api/v1/stats`, countries and cities per year. Non-empty country and city answers come from the OpenAPI examples as documented fixtures (`tests/data/documented/`), because the dev server has no reverse geocoding.
 * **Update**: Visits (#22): a visit page pushed from the sidebar (`vestigia/visits/`) renames, confirms, declines and chooses a place from `possible_places`, each with an Undo toast; a decline is held back until its toast closes because the server cannot undo it. Recordings extended (undo of a confirmation, choosing a place). Suggested visits are marked in the sidebar.
