@@ -62,6 +62,23 @@ GeoClue, GNSS and a real network are not.
 - [ ] Write the results under "Results on the phone" in
   [tracking](tracking.md).
 
+## Background tracking on the phone (issues 18 and 21)
+
+The [decision](decisions/background-tracking.md) was taken without
+measurements. On the phone, with the nightly:
+
+- [ ] Start tracking, close the window, let the screen turn off for an
+  hour: does the notification stay, do points keep coming (export the
+  day as GPX and look for gaps)? Once with "Keep the phone awake while
+  tracking" on, once off.
+- [ ] Battery per hour (percent at start and end, `upower -d`) for
+  precise and significant mode, screen off; write numbers and method
+  under "Results on the phone" in [tracking](tracking.md). If the drain
+  with the phone kept awake is unacceptable, change the default in
+  `vestigia/tracker/config.py` and the decision.
+- [ ] Turn "Start at Login" on: does Phosh show the Background portal's
+  dialog? After a reboot, does tracking resume without opening the app?
+
 ## Toolkit follow-ups (issues 5, 7 and 12)
 
 - [ ] phosh-toolkit (finding of issue 7, possibly the cause of the
