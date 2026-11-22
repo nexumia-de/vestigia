@@ -28,6 +28,14 @@ class FakeApp:
         assert cookie == 7
         self.inhibited.pop()
 
+    notifications = None
+
+    def send_notification(self, key, notification):
+        self.notifications = (self.notifications or []) + [(key, notification)]
+
+    def withdraw_notification(self, key):
+        self.notifications = [n for n in self.notifications if n[0] != key]
+
 
 class FakeTracker(GObject.Object):
     __gsignals__ = {"changed": (GObject.SignalFlags.RUN_FIRST, None, ())}
@@ -35,7 +43,11 @@ class FakeTracker(GObject.Object):
     def __init__(self, keep_awake=True):
         super().__init__()
         self.running = False
+        self.error = ""
         self.settings = TrackingSettings(keep_awake=keep_awake)
+
+    def target(self):
+        return None, None
 
     def set(self, running):
         self.running = running
@@ -61,3 +73,15 @@ def test_no_inhibit_when_off():
 
 def test_location_without_window():
     assert Location(0)._parent(None) is None
+
+
+def test_notification_with_stop():
+    app, tracker = FakeApp(), FakeTracker()
+    Keeper(app, tracker)
+    tracker.set(True)
+    tracker.emit("changed")              # same text: not sent again
+    assert len(app.notifications) == 1
+    key, notification = app.notifications[0]
+    assert key == "tracking"
+    tracker.set(False)
+    assert app.notifications == []

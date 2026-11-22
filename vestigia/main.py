@@ -30,6 +30,7 @@ class Application(Adw.Application):
                                ("preferences", self._on_preferences),
                                ("show-summary", self._on_show_summary),
                                ("toggle-tracking", self._on_toggle_tracking),
+                               ("stop-tracking", self._on_stop_tracking),
                                ("export-gpx", self._on_export_gpx),
                                ("quit", self._on_quit)):
             action = Gio.SimpleAction.new(name, None)
@@ -107,6 +108,10 @@ class Application(Adw.Application):
             self.tracker.stop()
         else:
             self.tracker.start(self._window())
+
+    def _on_stop_tracking(self, *_):
+        """The notification's Stop button."""
+        self.tracker.stop()
 
     def _on_export_gpx(self, *_):
         window = self._window()

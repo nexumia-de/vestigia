@@ -1,12 +1,16 @@
 """Tracking without a window (docs/decisions/background-tracking.md):
 hold the application while the tracker runs, inhibit suspend if the
-user wants that, and ask the Background portal for autostart."""
+user wants that, show a notification with Stop, and ask the Background
+portal for autostart."""
 import logging
 
-from gi.repository import Gtk
+from gi.repository import Gio, Gtk
+
+from vestigia.tracking import status
 
 log = logging.getLogger("vestigia.tracking")
 REASON = "Recording your location"
+NOTIFICATION = "tracking"
 
 
 class Keeper:
@@ -18,6 +22,8 @@ class Keeper:
         self.tracker = tracker
         self.held = False
         self.cookie = 0
+        # The notification's text as last sent, None when withdrawn.
+        self.shown = None
         tracker.connect("changed", lambda *_: self.update())
 
     def update(self):
@@ -37,6 +43,25 @@ class Keeper:
         elif not awake and self.cookie:
             self.app.uninhibit(self.cookie)
             self.cookie = 0
+        self._notify(running)
+
+    def _notify(self, running):
+        """While tracking, a notification says so, with Stop; it is sent
+        again only when its text changes."""
+        if not running:
+            if self.shown is not None:
+                self.app.withdraw_notification(NOTIFICATION)
+                self.shown = None
+            return
+        body = status.text(self.tracker)
+        if body == self.shown:
+            return
+        notification = Gio.Notification.new(REASON)
+        notification.set_body(body)
+        notification.set_icon(Gio.ThemedIcon.new("media-record-symbolic"))
+        notification.add_button("Stop", "app.stop-tracking")
+        self.app.send_notification(NOTIFICATION, notification)
+        self.shown = body
 
 
 def request_autostart(window, enable, done=None):

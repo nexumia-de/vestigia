@@ -134,7 +134,10 @@ None yet: the end-to-end walk (issue 17) is on the
 # Background operation on Phosh
 
 Built in `vestigia/tracking/background.py` and `vestigia/main.py`
-(`--background`, resume when `tracking.json` says tracking was on;
+(`--background`, resume when `tracking.json` says tracking was on; a
+notification "Recording your location" with the status line and a Stop
+button (`app.stop-tracking`) while tracking, replaced when the line
+changes and withdrawn on stop;
 Preferences → Tracking → In the Background: "Keep the Phone Awake While
 Tracking", "Start at Login"). Decided in
 [background tracking](decisions/background-tracking.md):

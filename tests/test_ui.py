@@ -160,7 +160,8 @@ def test_preferences_keep_style(app):
 
 
 def test_actions(app):
-    for name in ("about", "preferences", "quit"):
+    for name in ("about", "preferences", "quit", "toggle-tracking",
+                 "stop-tracking", "export-gpx", "show-summary"):
         assert app.lookup_action(name) is not None
 
 
