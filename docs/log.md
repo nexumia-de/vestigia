@@ -1,6 +1,7 @@
 # Directory Update Log
 
 ## 2026-11-22
+* **Update**: Location source and filter (#12): `vestigia/tracker/` with `Fix`, the GTK-free `Filter` (accuracy, distance/interval, (0, 0), time order) tested on the real OsmAnd fixes, and `Source` on `phosh_toolkit.location` (precise: `EXACT`; significant: street level, 100 m). See [tracking](tracking.md).
 * **Update**: Demo data and store screenshots (#11): `VESTIGIA_DEMO_DATA` points the app at the recorded answers (`vestigia/demo.py`), opening the recorded day without touching the real settings or keyring; `release.toml` declares the shots `day` and `summary` (new action `app.show-summary`, F9). See [dev environment](dev-environment.md).
 * **Update**: Empty, error and offline states (#10): no account → setup page; day without data, server unreachable and other errors → `AdwStatusPage` with Retry (`vestigia/day/states.py`); `401` anywhere → the key is removed and the setup page asks again; a server older than 1.18.1 → banner (checked at every start); offline with a saved copy → banner (#9). See [design](design.md).
 * **Update**: Offline days (#9): `vestigia/day/cache.py` keeps fetched days in `$XDG_CACHE_HOME/vestigia/days/<server hash>/<day>.json` (mode 600). Days before yesterday come from disk without a request (tracks are final within 12 h); today and yesterday show the saved copy at once and are fetched again; offline, an `AdwBanner` says a saved copy is shown, with Retry. Log out removes the cache.

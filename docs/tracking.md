@@ -3,7 +3,7 @@ type: Concept
 title: Tracking
 description: How Vestigia records positions on the phone, filters and queues them, and uploads them with standard protocols (Dawarich or any Overland/OwnTracks server) or exports GPX; the open problems of running in the background on Phosh.
 tags: [tracking, location, upload, overland, owntracks, gpx, background, battery, phosh]
-generated: { by: claude-code/2.1.311, at: 2026-10-27T16:30:00Z }
+generated: { by: claude-code/2.1.330, at: 2026-11-22T12:00:00Z }
 sources:
   - id: portal-location
     title: XDG Desktop Portal, Location
@@ -18,9 +18,10 @@ sources:
 
 # Status
 
-Plan only (2026-10-27). Nothing here is measured on the phone yet. The
-pipeline is milestone M2, background operation M3
-([roadmap](roadmap.md)).
+Pipeline built in M2 (2026-11-22) and tested in the cloud container with
+the fixes of a real recording and recorded server answers; nothing is
+measured on the phone yet ([owner checks](owner-checks.md)). Background
+operation is M3 ([roadmap](roadmap.md)).
 
 # Pipeline
 
@@ -32,14 +33,20 @@ location portal ──fix──▶ filter ──point──▶ store (SQLite) �
                                                   └──▶ GPX export (no server needed)
 ```
 
-1. **Source**: the XDG location portal (GeoClue behind it) through
-   libportal, with `EXACT` accuracy so GeoClue uses the GNSS
-   receiver[^portal-location]. Cirro already does this in
-   `cirro/location.py`; the code moves into phosh-toolkit when Vestigia
-   needs it ([code reuse](../../phosh-toolkit/docs/decisions/code-reuse.md)).
-2. **Filter**: drop fixes worse than the accuracy setting, closer than
-   `distance_filter` to the last kept point and younger than
-   `time_filter`; drop (0, 0). The settings are local; with a Dawarich
+1. **Source** (`vestigia/tracker/source.py`): the XDG location portal
+   (GeoClue behind it) through `phosh_toolkit.location` (toolkit v0.7.0).
+   Precise mode asks for `EXACT` accuracy so GeoClue uses the GNSS
+   receiver[^portal-location] and lets every move through to the filter;
+   significant mode asks for street level and moves of 100 m or more.
+   The wrapper reports latitude, longitude and accuracy only; the fix
+   gets the arrival time, no altitude or speed (owner checks: a toolkit
+   extension would add them).
+2. **Filter** (`vestigia/tracker/filter.py`, no GTK): drop (0, 0) and
+   invalid coordinates, fixes worse than the accuracy limit (metres),
+   fixes not newer than the last kept one, and fixes both closer than
+   the distance and younger than the interval since the last kept
+   point. Tested on the 43 fixes of a real OsmAnd recording
+   (`tests/data/source/`). The settings are local; with a Dawarich
    account they can sync with `/api/v1/settings/mobile`
    ([Dawarich API](dawarich-api.md)).
 3. **Store**: every kept point is written to an SQLite file in
