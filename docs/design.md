@@ -39,6 +39,7 @@ Why violet (chosen 2026-11-16 for the scaffold):
 | Screen | Narrow (≤ 600 sp) | Wide |
 |---|---|---|
 | Connect to Dawarich (no account) | `AdwPreferencesPage`: server address; log in with e-mail and password (pill "Log In", suggested) or paste the API key ("Use Key"); errors in an `AdwBanner`; scrolls for the on-screen keyboard, nothing focused when it opens | same, centred column |
+| Day (account saved) | OSM map filling the page with the day's tracks (accent line over a casing in the accent's text colour) and visits as markers, fitted to the day (again after a resize until the user moves the map); bottom bar within thumb reach: Previous Day, date button with a calendar popover, Next Day (off for today); header: title with the day as subtitle, menu; "Show My Location" as a round OSD button bottom right | same |
 | Two-Factor Code (pushed) | One entry row and "Verify" | same |
 | Preferences | `AdwPreferencesDialog`: Account (e-mail, server, "Log Out" with Undo toast), Appearance → Style | same |
 

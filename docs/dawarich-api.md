@@ -198,8 +198,9 @@ recordings in `tests/data/dawarich/<name>.json`) against
 - `GET /api/v1/tracks` → GeoJSON `FeatureCollection` of `LineString`s
   with `properties` `id`, `start_at`, `end_at`, `distance` (m),
   `avg_speed`, `duration`, … and the pagination headers (`tracks`).
-  A stop of two minutes (the recording's first segment) does not become
-  a track.
+  The recording's first segment, a stop of two minutes, became a 2 m
+  track in one recording and no track in an earlier one: track
+  generation is not fully deterministic, so the app takes what comes.
 - `GET /api/v1/timeline` → `{"days": [{"date", "summary":
   {"total_distance", "distance_unit", "places_visited",
   "time_moving_minutes", "time_stationary_minutes", …}, "bounds":

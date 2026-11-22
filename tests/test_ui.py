@@ -11,7 +11,7 @@ import gi  # noqa: E402
 
 gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
-from gi.repository import Adw, GLib  # noqa: E402
+from gi.repository import Adw, GLib, Gtk  # noqa: E402
 
 from phosh_toolkit.testing import run_until  # noqa: E402
 
@@ -41,6 +41,10 @@ def app():
     application = Application()
     application.register(None)
     Adw.init()
+    # Under Xvfb the frame clock of an animation (a spinner) is always
+    # ready and starves the idle callbacks that deliver worker results
+    # (phosh_toolkit.tasks); the real compositor paces frames.
+    Gtk.Settings.get_default().props.gtk_enable_animations = False
     yield application
 
 
@@ -166,6 +170,8 @@ def test_map_with_location_button(app):
     window.present()
     iterate()
     view = window.nav.get_visible_page().map
+    run_until(lambda: window.nav.get_visible_page().current is not None)
+    view.clear()
     button = view.locate_button
     assert button.get_tooltip_text() == "Show My Location"
     # A fix from the portal (none in tests) shows the own marker.
@@ -177,4 +183,26 @@ def test_map_with_location_button(app):
     assert len(view.tracks) == 2
     view.clear()
     assert view.tracks == []
+    window.destroy()
+
+
+def test_day_view(app):
+    from datetime import date, timedelta
+
+    from vestigia.window import Window
+    window = Window(app, new_account(configured=True))
+    window.present()
+    page = window.nav.get_visible_page()
+    run_until(lambda: page.current is not None)
+    # Today has no recorded data; the next day is not offered.
+    assert page.current.empty and not page.next_button.get_sensitive()
+    page.go(date.fromisoformat(recorded.DAY))
+    run_until(lambda: page.current.day == date.fromisoformat(recorded.DAY))
+    assert len(page.map.tracks) == 4          # two tracks, casing and line
+    assert page.next_button.get_sensitive()
+    page.prev_button.emit("clicked")
+    run_until(lambda: page.current.day == date.fromisoformat(recorded.DAY)
+              - timedelta(days=1))
+    assert page.map.tracks == []
+    assert page.date_button.get_label() == "Sat, 20 Apr 2024"
     window.destroy()

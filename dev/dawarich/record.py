@@ -31,6 +31,8 @@ SERVER = "http://127.0.0.1:3000"
 EMAIL = "demo@vestigia.test"
 PASSWORD = "vestigia-demo-password"
 DAY = ("2024-04-21T00:00:00Z", "2024-04-21T23:59:59Z")
+# The day before: no data.
+EMPTY_DAY = ("2024-04-20T00:00:00Z", "2024-04-20T23:59:59Z")
 KEPT_HEADERS = ("content-type", "x-dawarich-version", "x-dawarich-response",
                 "x-current-page", "x-total-pages")
 USER_AGENT = "Vestigia-recorder (+https://github.com/nexumia-de/vestigia)"
@@ -187,7 +189,7 @@ def main():
     # Reading history.
     time.sleep(5)
     query = {"start_at": DAY[0], "end_at": DAY[1], "per_page": 20, "order": "asc"}
-    for page in (1, 3):
+    for page in (1, 2, 3):
         save(f"points_page{page}", call("GET", "/api/v1/points", key,
                                         dict(query, page=page)))
     save("tracks_before_recalculation", call(
@@ -237,6 +239,12 @@ def main():
             body={"visit": {"status": "suggested"}}))
     save("timeline", call("GET", "/api/v1/timeline", key,
                           {"start_at": DAY[0], "end_at": DAY[1]}))
+    save("points_empty_day", call("GET", "/api/v1/points", key,
+                                  dict(query, start_at=EMPTY_DAY[0],
+                                       end_at=EMPTY_DAY[1], page=1)))
+    save("timeline_empty_day", call("GET", "/api/v1/timeline", key,
+                                    {"start_at": EMPTY_DAY[0],
+                                     "end_at": EMPTY_DAY[1]}))
     save("stats", call("GET", "/api/v1/stats", key))
     save("tracked_months", call("GET", "/api/v1/points/tracked_months", key))
     save("countries_visited", call("GET", "/api/v1/countries/visited", key,

@@ -6,7 +6,7 @@ import os
 import gi
 
 gi.require_version("Shumate", "1.0")
-from gi.repository import Gtk, Shumate  # noqa: E402
+from gi.repository import GLib, Gtk, Shumate  # noqa: E402
 from phosh_toolkit.location import Location  # noqa: E402
 
 from vestigia import USER_AGENT  # noqa: E402
@@ -49,7 +49,23 @@ class MapView(Gtk.Overlay):
         self.viewport = self.simple.get_viewport()
         self.viewport.set_reference_map_source(osm_source())
         self.set_child(self.simple)
+        # GtkOverlay is final, so its size_allocate cannot be overridden;
+        # an empty drawing area over the map reports size changes.
+        sizer = Gtk.DrawingArea(can_target=False, hexpand=True, vexpand=True)
+        sizer.connect("resize", self._on_resize)
+        self.add_overlay(sizer)
         self.tracks = []
+        # The box last fitted, and (width, height, view) after the fit.
+        self._shown = None
+        self._fitted = None
+        # The user dragged, zoomed or scrolled since the last fit.
+        self._touched = False
+        for controller in (Gtk.GestureClick(), Gtk.EventControllerScroll(
+                flags=Gtk.EventControllerScrollFlags.BOTH_AXES)):
+            controller.set_propagation_phase(Gtk.PropagationPhase.CAPTURE)
+            signal = "pressed" if isinstance(controller, Gtk.GestureClick) else "scroll"
+            controller.connect(signal, self._on_touch)
+            self.simple.add_controller(controller)
         self.markers = Shumate.MarkerLayer.new(self.viewport)
         self.map.add_layer(self.markers)
         self.me_layer = Shumate.MarkerLayer.new(self.viewport)
@@ -75,6 +91,7 @@ class MapView(Gtk.Overlay):
     # Tracks and markers
 
     def clear(self):
+        self._shown = None
         for layer in self.tracks:
             self.map.remove_layer(layer)
         self.tracks = []
@@ -104,15 +121,38 @@ class MapView(Gtk.Overlay):
         return marker
 
     def show(self, positions):
-        """Centre and zoom so that all (lat, lon) pairs are visible."""
+        """Centre and zoom so that all (lat, lon) pairs are visible; again
+        after a resize (a window maximized after it opened) as long as
+        the user has not moved the map since."""
         box = fit.bounds(positions)
         if box is None:
             return
+        self._shown = box
+        self._fit_box()
+
+    def _fit_box(self):
         width = self.get_width() or 360
         height = self.get_height() or 600
-        lat, lon, zoom = fit.fit(box, width, height)
+        lat, lon, zoom = fit.fit(self._shown, width, height)
         self.viewport.set_zoom_level(zoom)
         self.map.center_on(lat, lon)
+        self._fitted = (width, height)
+        self._touched = False
+
+    def _on_touch(self, *_):
+        self._touched = True
+
+    def _on_resize(self, area, width, height):
+        if self._shown is None or self._fitted is None:
+            return
+        if (width, height) != self._fitted and not self._touched:
+            # Not during allocation: changing the viewport queues one.
+            GLib.idle_add(self._refit)
+
+    def _refit(self):
+        if self._shown is not None:
+            self._fit_box()
+        return GLib.SOURCE_REMOVE
 
     def center(self, lat, lon, zoom=None):
         if zoom is not None:

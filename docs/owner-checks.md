@@ -44,8 +44,15 @@ pre-release (the tag exists); the shared repository picks it up.
   https://flatpak.nexumia.de/ in GNOME Software, start it, and check it
   shows in Phosh's app grid in mobile mode.
 
-## Toolkit follow-ups (issue 5)
+## Toolkit follow-ups (issues 5 and 7)
 
+- [ ] phosh-toolkit (finding of issue 7, possibly the cause of the
+  toolkit's unexplained UI test hangs in CI): under Xvfb a visible
+  `Gtk.Spinner` keeps the frame clock always ready, so `run_until()`'s
+  `iteration(False)` never reaches the idle callbacks that
+  `phosh_toolkit.tasks` delivers results with. Vestigia's UI tests set
+  `gtk-enable-animations` to false; the toolkit could do the same in
+  `testing` or deliver with a higher priority.
 - [ ] phosh-toolkit: give `Keyring` a public way to ask whether a
   secret only lives in memory (Vestigia reads `_memory` in
   `vestigia/secrets.py`); then switch Vestigia to it.

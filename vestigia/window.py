@@ -46,9 +46,16 @@ class Window(Adw.ApplicationWindow):
         from vestigia.account.setup_page import SetupPage
         self.nav.replace([SetupPage(self, message)])
 
-    def show_history(self):
-        from vestigia.history import HistoryPage
-        self.nav.replace([HistoryPage(self)])
+    def show_history(self, day=None):
+        from vestigia.day.page import DayPage
+        self.nav.replace([DayPage(self, day)])
+        if not self.account.email:
+            from phosh_toolkit import tasks
+            tasks.run(self.account.client().me, self._on_me)
+
+    def _on_me(self, user, error):
+        if error is None:
+            self.account.email = user.get("email", "")
 
     def connected(self, persistent):
         self.show_keyring_state(persistent)

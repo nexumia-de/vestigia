@@ -1,0 +1,25 @@
+{
+ "request": {
+  "method": "GET",
+  "path": "/api/v1/timeline",
+  "query": {
+   "start_at": "2024-04-20T00:00:00Z",
+   "end_at": "2024-04-20T23:59:59Z"
+  },
+  "body": null
+ },
+ "status": 200,
+ "headers": {
+  "content-type": "application/json; charset=utf-8",
+  "x-dawarich-version": "1.18.1",
+  "x-dawarich-response": "Hey, I'm alive and authenticated!"
+ },
+ "body": {
+  "days": []
+ },
+ "recorded": {
+  "server": "Dawarich 1.18.1",
+  "at": "2026-11-22",
+  "by": "dev/dawarich/record.py"
+ }
+}
