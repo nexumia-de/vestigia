@@ -41,6 +41,7 @@ python.install_sources(
   'vestigia/tracker/filter.py',
   'vestigia/tracker/fix.py',
   'vestigia/tracker/source.py',
+  'vestigia/tracker/store.py',
   'vestigia/secrets.py',
   'vestigia/window.py',
   preserve_path: true,

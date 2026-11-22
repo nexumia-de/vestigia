@@ -1,6 +1,7 @@
 # Directory Update Log
 
 ## 2026-11-22
+* **Update**: Point store (#13): `vestigia/tracker/store.py`, SQLite with per-target upload marks and parked points, pruning that never drops a waiting point; tests for order, marks, parking, restart and pruning on the real fixes. See [tracking](tracking.md).
 * **Update**: Location source and filter (#12): `vestigia/tracker/` with `Fix`, the GTK-free `Filter` (accuracy, distance/interval, (0, 0), time order) tested on the real OsmAnd fixes, and `Source` on `phosh_toolkit.location` (precise: `EXACT`; significant: street level, 100 m). See [tracking](tracking.md).
 * **Update**: Demo data and store screenshots (#11): `VESTIGIA_DEMO_DATA` points the app at the recorded answers (`vestigia/demo.py`), opening the recorded day without touching the real settings or keyring; `release.toml` declares the shots `day` and `summary` (new action `app.show-summary`, F9). See [dev environment](dev-environment.md).
 * **Update**: Empty, error and offline states (#10): no account → setup page; day without data, server unreachable and other errors → `AdwStatusPage` with Retry (`vestigia/day/states.py`); `401` anywhere → the key is removed and the setup page asks again; a server older than 1.18.1 → banner (checked at every start); offline with a saved copy → banner (#9). See [design](design.md).

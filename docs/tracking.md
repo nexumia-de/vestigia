@@ -49,11 +49,14 @@ location portal ──fix──▶ filter ──point──▶ store (SQLite) �
    (`tests/data/source/`). The settings are local; with a Dawarich
    account they can sync with `/api/v1/settings/mobile`
    ([Dawarich API](dawarich-api.md)).
-3. **Store**: every kept point is written to an SQLite file in
-   `$XDG_DATA_HOME/vestigia/` before anything else happens, so a crash,
-   a reboot or a dead network loses nothing. Points are marked as
-   uploaded, not deleted, and kept for a configurable time for GPX
-   export.
+3. **Store** (`vestigia/tracker/store.py`, no GTK): every kept point is
+   written to `$XDG_DATA_HOME/vestigia/points.sqlite` (mode 600, WAL,
+   `synchronous=FULL`) before anything else happens, so a crash, a
+   reboot or a dead network loses nothing. Uploads are marked per target
+   (`uploads` table), points a target refuses are parked per target
+   (`parked`), nothing is deleted on upload. Pruning removes points older
+   than the keep time (setting, default 30 days) only once the current
+   target has them or refused them; without a target, by age alone.
 4. **Uploader**: knows nothing about Dawarich; it sends to an upload
    target (URL, protocol, credentials) chosen by the user or filled in
    from the Dawarich account ([standard protocols](decisions/upload-protocols.md)).
