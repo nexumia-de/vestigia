@@ -16,7 +16,7 @@ Change history is in [log.md](log.md).
 
 # Design
 
-* [Dawarich API](dawarich-api.md) - Endpoints for login, history, tracking settings and uploads; verified in the source, open questions for a real server.
+* [Dawarich API](dawarich-api.md) - Endpoints for login, history, tracking settings and uploads; verified in the source and recorded from a local 1.18.1 server.
 * [Tracking](tracking.md) - Location portal, filter, SQLite store, uploader with standard protocols, GPX export; open problems of background operation on Phosh.
 * [Visual design](design.md) - Stock libadwaita with the track-violet accent and why, the screens, the review checklist.
 
@@ -25,6 +25,8 @@ Change history is in [log.md](log.md).
 * [Development environment](dev-environment.md) - Required hosts and how tests work without a server.
 * [Bundled dependencies](dependencies.md) - protobuf-c, libshumate and phosh-toolkit's package in the Flatpak, with licences and licence files.
 
+* [Owner checks](owner-checks.md) - What only the owner can do (phone, own server, secrets, other repositories), as one checklist.
+
 # Decision records
 
-* [Decisions](decisions/index.md) - Name, language, map widget, no own backend, licence; proposed: standard upload protocols.
+* [Decisions](decisions/index.md) - Name, language, map widget, no own backend, licence, standard upload protocols, oldest server version.

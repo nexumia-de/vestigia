@@ -1,0 +1,38 @@
+{
+ "request": {
+  "method": "POST",
+  "path": "/api/v1/overland/batches",
+  "query": {},
+  "body": {
+   "locations": [
+    {
+     "type": "Feature",
+     "geometry": {
+      "type": "Point",
+      "coordinates": [
+       -3.596212,
+       37.1685682
+      ]
+     },
+     "properties": {
+      "timestamp": "yesterday"
+     }
+    }
+   ]
+  }
+ },
+ "status": 422,
+ "headers": {
+  "content-type": "application/json; charset=utf-8",
+  "x-dawarich-version": "1.18.1",
+  "x-dawarich-response": "Hey, I'm alive and authenticated!"
+ },
+ "body": {
+  "error": "Timestamp must be a date and time or Unix seconds"
+ },
+ "recorded": {
+  "server": "Dawarich 1.18.1",
+  "at": "2026-11-22",
+  "by": "dev/dawarich/record.py"
+ }
+}

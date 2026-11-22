@@ -25,8 +25,19 @@ settings (allowed domains).
 # Working without a server
 
 - Tests use real answers recorded from a Dawarich server and stored in
-  `tests/data/dawarich/`, with the API key, e-mail addresses and exact
-  home positions removed (positions shifted, not invented).
+  `tests/data/dawarich/`, one JSON file per answer (request, status,
+  headers, body, `recorded` with server version and date), with the API
+  key, password, 2FA secret and challenge tokens replaced by
+  `REDACTED`. Recordings from a personal server must also shift home
+  positions (shifted, not invented) and replace e-mail addresses.
+- Record again with the local server running:
+  `python3 dev/dawarich/record.py` (standard library only). It uploads
+  `tests/data/source/gpx_track_multiple_segments.gpx`, a real OsmAnd
+  recording from Dawarich's test fixtures, asks for a track
+  recalculation, creates one suggested visit through the API, and turns
+  2FA on and off again for the login answers. Start from a fresh server
+  (`docker compose -f dev/dawarich/compose.yml down -v`, then `up.sh`),
+  otherwise ids and the recalculation answer differ.
 - Never replace missing live answers with invented samples.
 
 # Local Dawarich server

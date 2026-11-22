@@ -1,0 +1,48 @@
+{
+ "request": {
+  "method": "GET",
+  "path": "/api/v1/stats",
+  "query": {},
+  "body": null
+ },
+ "status": 200,
+ "headers": {
+  "content-type": "application/json; charset=utf-8",
+  "x-dawarich-version": "1.18.1",
+  "x-dawarich-response": "Hey, I'm alive and authenticated!"
+ },
+ "body": {
+  "totalDistanceKm": 2,
+  "totalPointsTracked": 43,
+  "totalReverseGeocodedPoints": 0,
+  "totalCountriesVisited": 0,
+  "totalCitiesVisited": 0,
+  "yearlyStats": [
+   {
+    "year": 2024,
+    "totalDistanceKm": 2,
+    "totalCountriesVisited": 0,
+    "totalCitiesVisited": 0,
+    "monthlyDistanceKm": {
+     "january": 0,
+     "february": 0,
+     "march": 0,
+     "april": 2,
+     "may": 0,
+     "june": 0,
+     "july": 0,
+     "august": 0,
+     "september": 0,
+     "october": 0,
+     "november": 0,
+     "december": 0
+    }
+   }
+  ]
+ },
+ "recorded": {
+  "server": "Dawarich 1.18.1",
+  "at": "2026-11-22",
+  "by": "dev/dawarich/record.py"
+ }
+}

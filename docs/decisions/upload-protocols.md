@@ -1,7 +1,7 @@
 ---
 type: Decision Record
 title: Standard protocols for uploads
-description: Proposed - the tracker uploads with the open Overland or OwnTracks HTTP protocols to any URL, Dawarich is one target among others; GPX export works without a server.
+description: Accepted - the tracker uploads with the open Overland or OwnTracks HTTP protocols to any URL, Dawarich is one target among others; GPX export works without a server.
 tags: [decision, upload, tracking, protocol, gpx]
 generated: { by: claude-code/2.1.311, at: 2026-10-27T17:10:00Z }
 sources:
@@ -21,10 +21,13 @@ sources:
 
 # Status
 
-Proposed (2026-10-27) by the owner's request "build tracking on
-standards, not on Dawarich's own API". To be confirmed with real
-servers in M0. Dawarich side checked on a local 1.18.1 server on
-2026-10-27.
+Accepted (2026-11-22). Proposed on 2026-10-27 by the owner's request
+"build tracking on standards, not on Dawarich's own API"; the Dawarich
+side was confirmed by recorded answers of a local 1.18.1 server
+(`tests/data/dawarich/overland_batch*.json`, `owntracks_point*.json`):
+Overland batches with `{"result":"ok"}`, deduplicated re-sends,
+OwnTracks with Bearer only. A second receiver (OwnTracks Recorder) was
+not run; its answers follow its booklet[^owntracks-http].
 
 # Context
 

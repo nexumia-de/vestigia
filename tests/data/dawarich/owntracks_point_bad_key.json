@@ -1,0 +1,29 @@
+{
+ "request": {
+  "method": "POST",
+  "path": "/api/v1/owntracks/points",
+  "query": {},
+  "body": {
+   "_type": "location",
+   "lat": 37.1685682,
+   "lon": -3.596212,
+   "alt": 719,
+   "acc": 5,
+   "vel": 1,
+   "tid": "vg",
+   "tst": 1713690451
+  }
+ },
+ "status": 401,
+ "headers": {
+  "content-type": "text/html",
+  "x-dawarich-version": "1.18.1",
+  "x-dawarich-response": "Hey, I'm alive!"
+ },
+ "body": null,
+ "recorded": {
+  "server": "Dawarich 1.18.1",
+  "at": "2026-11-22",
+  "by": "dev/dawarich/record.py"
+ }
+}

@@ -15,3 +15,11 @@ path = "data/*.metainfo.xml"
 precedence = "override"
 SPDX-FileCopyrightText = "2026 suitably"
 SPDX-License-Identifier = "CC0-1.0"
+
+# A real OsmAnd recording from Dawarich's test fixtures (1.18.1,
+# spec/fixtures/files/gpx/), used as the source of recorded answers.
+[[annotations]]
+path = "tests/data/source/gpx_track_multiple_segments.gpx"
+precedence = "override"
+SPDX-FileCopyrightText = "Evgenii Burmakin and Dawarich contributors"
+SPDX-License-Identifier = "AGPL-3.0-or-later"

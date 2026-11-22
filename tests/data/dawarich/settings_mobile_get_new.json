@@ -1,0 +1,29 @@
+{
+ "request": {
+  "method": "GET",
+  "path": "/api/v1/settings/mobile",
+  "query": {},
+  "body": null
+ },
+ "status": 200,
+ "headers": {
+  "content-type": "application/json; charset=utf-8",
+  "x-dawarich-version": "1.18.1",
+  "x-dawarich-response": "Hey, I'm alive and authenticated!"
+ },
+ "body": {
+  "settings": {},
+  "updated_at": null,
+  "capabilities": {
+   "photo_library_import": {
+    "version": 1
+   }
+  },
+  "status": "success"
+ },
+ "recorded": {
+  "server": "Dawarich 1.18.1",
+  "at": "2026-11-22",
+  "by": "dev/dawarich/record.py"
+ }
+}

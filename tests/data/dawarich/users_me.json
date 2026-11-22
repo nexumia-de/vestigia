@@ -1,0 +1,55 @@
+{
+ "request": {
+  "method": "GET",
+  "path": "/api/v1/users/me",
+  "query": {},
+  "body": null
+ },
+ "status": 200,
+ "headers": {
+  "content-type": "application/json; charset=utf-8",
+  "x-dawarich-version": "1.18.1",
+  "x-dawarich-response": "Hey, I'm alive and authenticated!"
+ },
+ "body": {
+  "user": {
+   "id": 2,
+   "email": "demo@vestigia.test",
+   "theme": "dark",
+   "created_at": "2026-11-22T06:54:11.601+01:00",
+   "updated_at": "2026-11-22T06:54:11.667+01:00",
+   "settings": {
+    "timezone": "Europe/Berlin",
+    "maps": {
+     "distance_unit": "km"
+    },
+    "fog_of_war_meters": 100,
+    "meters_between_routes": 1000,
+    "preferred_map_layer": "OpenStreetMap",
+    "speed_colored_routes": false,
+    "points_rendering_mode": "raw",
+    "minutes_between_routes": 60,
+    "time_threshold_minutes": 30,
+    "merge_threshold_minutes": 15,
+    "live_map_enabled": true,
+    "route_opacity": 0.6,
+    "immich_url": null,
+    "photoprism_url": null,
+    "visits_suggestions_enabled": true,
+    "speed_color_scale": null,
+    "fog_of_war_threshold": 50,
+    "globe_projection": true
+   }
+  },
+  "features": {
+   "reverse_geocoding": false,
+   "family": true,
+   "achievements": true
+  }
+ },
+ "recorded": {
+  "server": "Dawarich 1.18.1",
+  "at": "2026-11-22",
+  "by": "dev/dawarich/record.py"
+ }
+}
