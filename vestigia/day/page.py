@@ -10,7 +10,7 @@ from gi.repository import Adw, GLib, GObject, Gtk
 from phosh_toolkit import tasks, widgets
 
 from vestigia import NAME
-from vestigia.day import model
+from vestigia.day import cache, model
 from vestigia.day.sidebar import Sidebar
 from vestigia.map.view import MapView
 
@@ -44,6 +44,10 @@ class DayPage(Adw.NavigationPage):
         header.pack_start(self.sidebar_button)
         self.header = header
         self.toolbar.add_top_bar(header)
+        # A saved copy is shown because the server cannot be reached.
+        self.offline_banner = Adw.Banner(button_label="Retry")
+        self.offline_banner.connect("button-clicked", lambda *_: self.load())
+        self.toolbar.add_top_bar(self.offline_banner)
 
         self.map = MapView(window)
         self.overlay = Gtk.Overlay(child=self.map)
@@ -123,20 +127,33 @@ class DayPage(Adw.NavigationPage):
         self.next_button.set_sensitive(day < date.today())
         self.calendar.select_day(GLib.DateTime.new_local(day.year, day.month,
                                                          day.day, 0, 0, 0))
+        server = self.window.account.server_url
+        saved = cache.load(server, day)
+        if saved is not None:
+            self.show_day(saved)
+            if cache.final(day):
+                self.offline_banner.set_revealed(False)
+                return
         self._loading += 1
         self.spinner.set_visible(True)
         client = self.window.account.client()
-        tasks.run(model.load, lambda result, error: self._loaded(day, result, error),
-                  client, day)
+        tasks.run(model.load, lambda result, error: self._loaded(
+            day, server, saved, result, error), client, day)
 
-    def _loaded(self, day, result, error):
+    def _loaded(self, day, server, saved, result, error):
         self._loading -= 1
         if day != self.day:
             return
         self.spinner.set_visible(False)
         if error is not None:
+            if saved is not None and getattr(error, "kind", "") == "network":
+                self.offline_banner.set_title("Offline: showing the saved copy")
+                self.offline_banner.set_revealed(True)
+                return
             self.show_error(error)
             return
+        self.offline_banner.set_revealed(False)
+        cache.save(server, result)
         self.show_day(result)
 
     def show_day(self, result):

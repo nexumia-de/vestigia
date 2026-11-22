@@ -24,6 +24,7 @@ python.install_sources(
   'vestigia/api/recorded.py',
   'vestigia/api/version.py',
   'vestigia/day/__init__.py',
+  'vestigia/day/cache.py',
   'vestigia/day/model.py',
   'vestigia/day/page.py',
   'vestigia/day/sidebar.py',

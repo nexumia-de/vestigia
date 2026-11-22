@@ -226,3 +226,32 @@ def test_sidebar_summary_and_visit(app):
     viewport = page.map.viewport
     assert abs(viewport.get_latitude() - 37.168572) < 1e-4
     window.destroy()
+
+
+def test_saved_days_offline(app):
+    from datetime import date
+
+    from vestigia.day import cache, model
+    from vestigia.window import Window
+    account = new_account(configured=True)
+    window = Window(app, account)
+    window.present()
+    page = window.nav.get_visible_page()
+    day = date.fromisoformat(recorded.DAY)
+    page.go(day)
+    run_until(lambda: page.current and page.current.day == day)
+    assert cache.load(account.server_url, day) is not None
+    # A final day comes from disk without a request.
+    account.http.offline = True
+    count = len(account.http.requests)
+    page.go(date.today())
+    run_until(lambda: page._loading == 0)
+    page.go(day)
+    assert page.current.day == day and len(account.http.requests) == count + 1
+    # Today is fetched again; offline, the saved copy stays with a banner.
+    today = model.Day(day=date.today(), tracks=[[(1.0, 2.0), (1.1, 2.1)]])
+    cache.save(account.server_url, today)
+    page.go(date.today())
+    run_until(lambda: page.offline_banner.get_revealed())
+    assert page.current.day == date.today() and len(page.map.tracks) == 2
+    window.destroy()

@@ -37,9 +37,12 @@ class Account:
         return self.secrets.store_api_key(api_key)
 
     def log_out(self):
-        """Forget the key; returns what restore() needs for Undo."""
+        """Forget the key and the saved days; returns what restore()
+        needs for Undo."""
+        from vestigia.day import cache
         saved = (self.server_url, self.secrets.api_key(), self.email)
         self.secrets.clear()
+        cache.clear()
         self.email = ""
         return saved
 
