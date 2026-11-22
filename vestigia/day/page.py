@@ -12,6 +12,7 @@ from phosh_toolkit import tasks, widgets
 from vestigia import NAME
 from vestigia.day import cache, model
 from vestigia.day.sidebar import Sidebar
+from vestigia.day.states import StateStack
 from vestigia.map.view import MapView
 
 
@@ -48,6 +49,9 @@ class DayPage(Adw.NavigationPage):
         self.offline_banner = Adw.Banner(button_label="Retry")
         self.offline_banner.connect("button-clicked", lambda *_: self.load())
         self.toolbar.add_top_bar(self.offline_banner)
+        # A server problem that stays (too old for Travel Log).
+        self.server_banner = Adw.Banner()
+        self.toolbar.add_top_bar(self.server_banner)
 
         self.map = MapView(window)
         self.overlay = Gtk.Overlay(child=self.map)
@@ -57,7 +61,9 @@ class DayPage(Adw.NavigationPage):
         self.spinner.set_margin_top(12)
         self.spinner.set_visible(False)
         self.overlay.add_overlay(self.spinner)
-        self.toolbar.set_content(self.overlay)
+        self.states = StateStack(self.overlay)
+        self.states.connect("retry", lambda *_: self.load())
+        self.toolbar.set_content(self.states)
         self.toolbar.add_bottom_bar(self._day_bar())
 
         self.sidebar = Sidebar()
@@ -146,11 +152,17 @@ class DayPage(Adw.NavigationPage):
             return
         self.spinner.set_visible(False)
         if error is not None:
-            if saved is not None and getattr(error, "kind", "") == "network":
+            if getattr(error, "kind", "") == "auth":
+                self.window.key_rejected()
+            elif saved is not None and getattr(error, "kind", "") == "network":
                 self.offline_banner.set_title("Offline: showing the saved copy")
                 self.offline_banner.set_revealed(True)
-                return
-            self.show_error(error)
+            elif saved is None:
+                self.map.clear()
+                self.sidebar.show_day(model.Day(day=day))
+                self.states.show_error(error)
+            else:
+                self.show_error(error)
             return
         self.offline_banner.set_revealed(False)
         cache.save(server, result)
@@ -165,6 +177,12 @@ class DayPage(Adw.NavigationPage):
             self.map.add_marker(visit.lat, visit.lon, "mark-location-symbolic",
                                 visit.name)
         self.sidebar.show_day(result)
+        if result.empty:
+            when = day_label(result.day)
+            self.states.show_empty(when.lower() if when in ("Today", "Yesterday")
+                                   else f"on {when}")
+        else:
+            self.states.show_content()
         self._fit()
 
     def _on_visit(self, sidebar, visit):

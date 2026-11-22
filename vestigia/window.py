@@ -47,15 +47,36 @@ class Window(Adw.ApplicationWindow):
         self.nav.replace([SetupPage(self, message)])
 
     def show_history(self, day=None):
+        from phosh_toolkit import tasks
+
         from vestigia.day.page import DayPage
-        self.nav.replace([DayPage(self, day)])
+        self.history = DayPage(self, day)
+        self.nav.replace([self.history])
+        client = self.account.client()
+        tasks.run(client.health, self._on_health)
         if not self.account.email:
-            from phosh_toolkit import tasks
-            tasks.run(self.account.client().me, self._on_me)
+            tasks.run(client.me, self._on_me)
+
+    def _on_health(self, version, error):
+        from vestigia.api.client import TOO_OLD
+        if getattr(error, "kind", "") == TOO_OLD:
+            self.history.server_banner.set_title(str(error))
+            self.history.server_banner.set_revealed(True)
 
     def _on_me(self, user, error):
         if error is None:
             self.account.email = user.get("email", "")
+        elif getattr(error, "kind", "") == "auth":
+            self.key_rejected()
+
+    def key_rejected(self):
+        """The server no longer accepts the key (deleted or renewed):
+        forget it and ask again; the address stays."""
+        if self.nav.get_visible_page() and \
+                self.nav.get_visible_page().get_tag() == "setup":
+            return
+        self.account.secrets.clear()
+        self.show_setup("The server rejected the API key. Log in again.")
 
     def connected(self, persistent):
         self.show_keyring_state(persistent)

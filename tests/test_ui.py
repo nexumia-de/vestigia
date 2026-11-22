@@ -255,3 +255,59 @@ def test_saved_days_offline(app):
     run_until(lambda: page.offline_banner.get_revealed())
     assert page.current.day == date.today() and len(page.map.tracks) == 2
     window.destroy()
+
+
+def test_states(app):
+    from datetime import date
+
+    from vestigia.day import states
+    from vestigia.window import Window
+    account = new_account(configured=True)
+    window = Window(app, account)
+    window.present()
+    page = window.nav.get_visible_page()
+    run_until(lambda: page.current is not None)
+    assert page.states.state == states.EMPTY
+    assert "today" in page.states.status.get_description()
+    # Unreachable without a saved copy, Retry once the network is back.
+    account.http.offline = True
+    page.go(date.fromisoformat(recorded.DAY))
+    run_until(lambda: page.states.state == states.UNREACHABLE)
+    assert page.states.retry_button.get_visible()
+    account.http.offline = False
+    page.states.retry_button.emit("clicked")
+    run_until(lambda: page.states.state is None)
+    window.destroy()
+
+
+def test_rejected_key_asks_again(app):
+    from vestigia.window import Window
+    account = new_account(configured=True)
+    account.secrets.store_api_key("an-old-key")
+    window = Window(app, account)
+    window.present()
+    run_until(lambda: visible_tag(window) == "setup")
+    page = window.nav.get_visible_page()
+    assert page.banner.get_revealed() and "rejected" in page.banner.get_title()
+    assert account.server_url and account.secrets.api_key() is None
+    window.destroy()
+
+
+def test_old_server_banner(app):
+    from phosh_toolkit.http import Response
+
+    from vestigia.window import Window
+    account = new_account(configured=True)
+    real = account.http.request
+
+    def request(method, url, headers=None, body=None, **kwargs):
+        if url.endswith("/api/v1/health"):
+            return Response(200, {"X-Dawarich-Version": "1.17.0"}, b'{"status":"ok"}')
+        return real(method, url, headers, body, **kwargs)
+    account.http.request = request
+    window = Window(app, account)
+    window.present()
+    page = window.nav.get_visible_page()
+    run_until(lambda: page.server_banner.get_revealed())
+    assert "1.17.0" in page.server_banner.get_title()
+    window.destroy()
