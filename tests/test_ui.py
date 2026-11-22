@@ -45,6 +45,15 @@ def test_start_page(app):
     window.destroy()
 
 
+def test_keyring_banner(app):
+    from vestigia.window import Window
+    window = Window(app, settings.Store())
+    assert not window.keyring_banner.get_revealed()
+    window.show_keyring_state(False)
+    assert window.keyring_banner.get_revealed()
+    window.destroy()
+
+
 def test_preferences_keep_style(app):
     from vestigia.preferences import PreferencesDialog
     from vestigia.window import Window

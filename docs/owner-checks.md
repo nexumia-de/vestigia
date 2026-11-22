@@ -43,3 +43,9 @@ pre-release (the tag exists); the shared repository picks it up.
 - [ ] On the phone, install *Travel Log (Nightly)* from
   https://flatpak.nexumia.de/ in GNOME Software, start it, and check it
   shows in Phosh's app grid in mobile mode.
+
+## Toolkit follow-ups (issue 5)
+
+- [ ] phosh-toolkit: give `Keyring` a public way to ask whether a
+  secret only lives in memory (Vestigia reads `_memory` in
+  `vestigia/secrets.py`); then switch Vestigia to it.

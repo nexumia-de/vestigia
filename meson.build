@@ -18,8 +18,9 @@ python.install_sources(
   'vestigia/main.py',
   'vestigia/preferences.py',
   'vestigia/settings.py',
+  'vestigia/secrets.py',
   'vestigia/window.py',
-  subdir: 'vestigia',
+  preserve_path: true,
 )
 # Loaded next to the Python files, also from the source tree.
 install_data('vestigia/style.css', install_dir: pythondir / 'vestigia')

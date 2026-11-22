@@ -7,3 +7,4 @@
 * [AGPL-3.0 license](license.md) - Same licence and contributor terms as Cirro.
 * [Standard protocols for uploads](upload-protocols.md) - Accepted: the tracker speaks Overland and OwnTracks HTTP to any URL, Dawarich is one target; GPX export.
 * [Oldest supported Dawarich version](minimum-server-version.md) - 1.18.1, the version the recorded answers come from.
+* [The API key in the Secret portal](api-key-storage.md) - Key only in the keyring, server address in the settings, a locked keyring shown as a banner.

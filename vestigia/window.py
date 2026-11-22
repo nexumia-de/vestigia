@@ -13,8 +13,15 @@ class Window(Adw.ApplicationWindow):
         self.set_size_request(360, 294)
         self.settings_store = settings_store
         self.settings = settings_store.load()
-        self.nav = Adw.NavigationView()
-        self.toasts = Adw.ToastOverlay(child=self.nav)
+        self.nav = Adw.NavigationView(vexpand=True)
+        # The keyring is locked or missing: the key lives only in memory.
+        self.keyring_banner = Adw.Banner(
+            title="The API key is kept only until Travel Log closes: "
+                  "the keyring is locked or missing")
+        box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        box.append(self.keyring_banner)
+        box.append(self.nav)
+        self.toasts = Adw.ToastOverlay(child=box)
         self.set_content(self.toasts)
         self.nav.replace([self._start_page()])
 
@@ -41,6 +48,9 @@ class Window(Adw.ApplicationWindow):
         toolbar.set_content(self.status)
         page.set_child(toolbar)
         return page
+
+    def show_keyring_state(self, persistent):
+        self.keyring_banner.set_revealed(not persistent)
 
     def save_settings(self):
         self.settings_store.save(self.settings)
