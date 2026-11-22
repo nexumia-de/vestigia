@@ -32,6 +32,8 @@ jobs:
           "${apt[@]}" update -q
           "${apt[@]}" install -y -q --no-install-recommends \
             python3-pytest python3-gi gir1.2-gtk-4.0 gir1.2-adw-1 \
+            gir1.2-shumate-1.0 gir1.2-xdp-1.0 gir1.2-xdpgtk4-1.0 \
+            gir1.2-secret-1 gir1.2-soup-3.0 \
             xvfb xauth appstream desktop-file-utils
       - name: Validate metadata
         run: |
