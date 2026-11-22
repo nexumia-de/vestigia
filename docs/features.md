@@ -3,7 +3,7 @@ type: Concept
 title: Feature inventory
 description: What Vestigia does with a Dawarich server, ordered by priority, with the endpoints each feature needs.
 tags: [features, scope, dawarich]
-generated: { by: claude-code/2.1.311, at: 2026-10-27T16:30:00Z }
+generated: { by: claude-code/2.1.330, at: 2026-11-22T16:00:00Z }
 ---
 
 # Scope
@@ -34,8 +34,14 @@ Priorities: **P1** must have for the first usable release, **P2** next,
 | Visits: confirm, decline, pick or rename the place | P2 | `visits`, `visits/{id}/possible_places`, `places` | M4 |
 | Statistics per year and month, countries and cities | P2 | `stats`, `countries/visited`, `countries/visited_cities` | M4 |
 | Date ranges and a calendar with days that have data | P2 | `points/tracked_months` | M4 |
-| Hexagon density / "fog of war" layer | P3 | `maps/hexagons`, `maps/hexagons/fog` | M5 |
-| Photos along a track | P3 | `photos`, `photos/{id}/thumbnail` | M5 |
-| Family members' positions | P3 | `families/locations` | M5 |
-| Notes on a day or place | P3 | `notes` | backlog |
-| Edit or delete points | P3 | `points/{id}`, `points/bulk_destroy` | backlog |
+| Hexagon density / "fog of war" layer | P3 | `maps/hexagons`, `maps/hexagons/fog` | not planned |
+| Photos along a track | P3 | `photos`, `photos/{id}/thumbnail` | not planned |
+| Family members' positions | P3 | `families/locations` | not planned |
+| Notes on a day or place | P3 | `notes` | not planned |
+| Edit or delete points | P3 | `points/{id}`, `points/bulk_destroy` | not planned |
+
+"Not planned" (2026-11-22): closed as speculative; each needs a server
+feature few instances enable and no user asked for it. A new issue
+brings one back. Traccar Client JSON uploads (`traccar/points`) are not
+planned either: Overland and OwnTracks HTTP cover Dawarich and the
+common self-hosted receivers ([standard protocols](decisions/upload-protocols.md)).

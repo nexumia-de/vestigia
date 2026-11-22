@@ -214,11 +214,20 @@ recordings in `tests/data/dawarich/<name>.json`) against
   after `declined` the visit **disappears**: it is no longer listed and
   a further `PATCH` answers `404` (`visit_decline`,
   `visits_after_decline`, `visit_suggest_again`). Declining cannot be
-  undone through the API, so the app asks before declining.
+  undone through the API, so the app sends it only after its Undo toast
+  closed. A confirmation can be undone with `status: suggested`
+  (`visit_unconfirm`); `place_id` from `possible_places` sets the place
+  (`visit_choose_place`). An edit of a suggested visit (name, place)
+  also confirms it unless the request sends a status
+  (`Api::V1::VisitsController#update_visit`, 1.18.1 source).
 - `GET /api/v1/stats`, `/api/v1/points/tracked_months` (`[{"year":
   2024, "months": ["Apr"]}]`), `/api/v1/countries/visited` and
   `/visited_cities` answer as recorded; countries and cities stay empty
   without reverse geocoding (`STORE_GEODATA=false` on the dev server).
+  Their non-empty shape (`{"countries": [{"iso_a3", "name"}]}`,
+  `{"data": [{"country", "cities": [{"city", "points", "timestamp",
+  "stayed_for"}]}]}`) comes from the OpenAPI examples[^swagger], kept
+  as **documented, not recorded** fixtures in `tests/data/documented/`.
 
 # Open questions
 
@@ -234,8 +243,8 @@ recordings in `tests/data/dawarich/<name>.json`) against
    ranges; to be compared with the official app by the owner
    ([owner checks](owner-checks.md)).
 5. ~~Why no tracks?~~ 6-hour look-back of the real-time job, see above.
-6. MVT tiles accept the Bearer header (2026-11-22); whether libshumate
-   should draw them is decided with the range view (M4).
+6. MVT tiles accept the Bearer header (2026-11-22); not used for now
+   ([range view](decisions/range-view.md)).
 7. ~~Oldest supported version~~: 1.18.1, the version the answers were
    recorded from ([decision](decisions/minimum-server-version.md)).
 

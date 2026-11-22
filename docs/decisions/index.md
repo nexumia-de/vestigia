@@ -9,3 +9,4 @@
 * [Oldest supported Dawarich version](minimum-server-version.md) - 1.18.1, the version the recorded answers come from.
 * [The API key in the Secret portal](api-key-storage.md) - Key only in the keyring, server address in the settings, a locked keyring shown as a banner.
 * [Tracking in the background on Phosh](background-tracking.md) - Hold without a window, inhibit suspend (default on), notification with Stop, resume after restart, optional start at login.
+* [Week and month ranges with GeoJSON tracks](range-view.md) - Day, week and month from `/api/v1/tracks`; no vector tiles, no longer ranges for now; calendar marks from one timeline request per month.

@@ -46,8 +46,10 @@ class Sidebar(Adw.Bin):
             self.visits_group.remove(row)
         self.visit_rows = []
         for visit in day.visits:
-            row = Adw.ActionRow(title=visit.name, activatable=True,
-                                subtitle=text.span(visit.started_at, visit.ended_at))
+            when = text.span(visit.started_at, visit.ended_at)
+            if visit.status == "suggested":
+                when = f"Suggested · {when}"
+            row = Adw.ActionRow(title=visit.name, activatable=True, subtitle=when)
             row.add_suffix(Gtk.Image(icon_name="go-next-symbolic"))
             row.connect("activated", lambda _r, v=visit: self.emit("visit-activated", v))
             self.visits_group.add(row)

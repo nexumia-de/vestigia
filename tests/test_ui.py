@@ -224,6 +224,10 @@ def test_sidebar_summary_and_visit(app):
     assert [r.get_title() for r in page.sidebar.visit_rows] == ["Morning stop"]
     page.split.set_show_sidebar(True)
     page.sidebar.visit_rows[0].emit("activated")
+    run_until(lambda: visible_tag(window) == "visit")
+    # "Show on Map" goes back and centres the map on the visit.
+    window.nav.get_visible_page()._on_map()
+    assert visible_tag(window) == "history"
     viewport = page.map.viewport
     assert abs(viewport.get_latitude() - 37.168572) < 1e-4
     window.destroy()
@@ -420,4 +424,96 @@ def test_export_gpx(app, tmp_path):
     target = Gio.File.new_for_path(str(tmp_path / "day.gpx"))
     export.save(window, target, data)
     assert (tmp_path / "day.gpx").read_bytes() == data
+    window.destroy()
+
+
+def open_recorded_visit(app):
+    from datetime import date
+
+    from vestigia.window import Window
+    account = new_account(configured=True)
+    window = Window(app, account)
+    window.present()
+    page = window.history
+    day = date.fromisoformat(recorded.DAY)
+    page.go(day)
+    run_until(lambda: page.current and page.current.day == day)
+    page.sidebar.visit_rows[0].emit("activated")
+    run_until(lambda: visible_tag(window) == "visit")
+    return window, account, page, window.nav.get_visible_page()
+
+
+def patches(account):
+    return [body["visit"] for method, path, _q, body in account.http.requests
+            if method == "PATCH"]
+
+
+def test_visit_confirm_and_undo(app):
+    window, account, page, visit_page = open_recorded_visit(app)
+    run_until(lambda: visit_page.place_rows)
+    assert visit_page.place_rows[0].get_title() == "Stop"
+    visit_page.confirm_button.emit("clicked")
+    assert visible_tag(window) == "history"
+    run_until(lambda: patches(account))
+    assert patches(account) == [{"status": "confirmed"}]
+    window.destroy()
+
+
+def test_visit_decline_is_sent_after_the_toast(app):
+    window, account, page, visit_page = open_recorded_visit(app)
+    visit_page.decline_button.emit("clicked")
+    # Hidden at once, nothing sent while Undo is possible.
+    assert page.sidebar.visit_rows == [] and patches(account) == []
+    window.destroy()
+
+
+def test_visit_rename_keeps_status(app):
+    window, account, page, visit_page = open_recorded_visit(app)
+    visit_page.name_row.set_text("Café")
+    visit_page.name_row.emit("apply")
+    run_until(lambda: patches(account))
+    assert patches(account) == [{"name": "Café", "status": "confirmed"}]
+    window.destroy()
+
+
+def test_statistics_page(app):
+    from vestigia.window import Window
+    window = Window(app, new_account(configured=True))
+    window.present()
+    window.show_statistics()
+    page = window.nav.get_visible_page()
+    assert page.get_tag() == "statistics"
+    run_until(lambda: page.month_rows)
+    assert page.total_rows["points"].value.get_label() == "43"
+    assert page.month_rows[3].value.get_label() == "2 km"
+    run_until(lambda: "reverse geocoding" in page.places.get_description())
+    window.destroy()
+
+
+def test_week_month_and_calendar_marks(app):
+    from datetime import date
+
+    from vestigia.window import Window
+    window = Window(app, new_account(configured=True))
+    window.present()
+    page = window.history
+    day = date.fromisoformat(recorded.DAY)
+    page.go(day)
+    run_until(lambda: page.current and page.current.day == day)
+    page.bar.span_buttons["week"].set_active(True)
+    run_until(lambda: page.current.end == date(2024, 4, 21))
+    assert page.date_button.get_label() == "15 – 21 Apr 2024"
+    assert page.prev_button.get_tooltip_text() == "Previous Week"
+    assert len(page.map.tracks) == 4
+    page.bar.span_buttons["month"].set_active(True)
+    run_until(lambda: page.current.end == date(2024, 4, 30))
+    page.prev_button.emit("clicked")
+    run_until(lambda: page.current.day == date(2024, 3, 1))
+    assert page.states.state == "empty"
+    assert "No Data in This Period" == page.states.status.get_title()
+    # Calendar marks: April 2024 has data on the 21st.
+    page.bar.calendar.select_day(GLib.DateTime.new_local(2024, 4, 21, 0, 0, 0))
+    page.bar._month_shown()
+    run_until(lambda: page.bar.calendar.get_day_is_marked(21))
+    assert not page.bar.calendar.get_day_is_marked(20)
     window.destroy()
