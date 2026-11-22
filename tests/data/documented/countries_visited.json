@@ -1,0 +1,8 @@
+{
+ "documented": {
+  "recorded": false,
+  "source": "Dawarich 1.18.1 swagger/v1/swagger.yaml, schema example of GET /api/v1/countries/visited (200): iso_a3 DEU, name Germany",
+  "note": "Not a server answer: the dev server has no reverse geocoding, so its recorded answer is empty (tests/data/dawarich/countries_visited.json)."
+ },
+ "body": {"countries": [{"iso_a3": "DEU", "name": "Germany"}]}
+}

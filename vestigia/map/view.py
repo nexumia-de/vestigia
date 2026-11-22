@@ -48,6 +48,8 @@ class MapView(Gtk.Overlay):
         self.map = self.simple.get_map()
         self.viewport = self.simple.get_viewport()
         self.viewport.set_reference_map_source(osm_source())
+        # A continent rather than the world repeated; a day fits later.
+        self.viewport.set_zoom_level(3)
         self.set_child(self.simple)
         # GtkOverlay is final, so its size_allocate cannot be overridden;
         # an empty drawing area over the map reports size changes.
@@ -55,6 +57,7 @@ class MapView(Gtk.Overlay):
         sizer.connect("resize", self._on_resize)
         self.add_overlay(sizer)
         self.tracks = []
+        self.live = []
         # The box last fitted, and (width, height, view) after the fit.
         self._shown = None
         self._fitted = None
@@ -109,6 +112,22 @@ class MapView(Gtk.Overlay):
                 layer.add_node(Shumate.Coordinate.new_full(lat, lon))
             self.map.insert_layer_behind(layer, self.markers)
             self.tracks.append(layer)
+
+    def set_live(self, positions):
+        """Today's points recorded on this phone, drawn over the day."""
+        for layer in self.live:
+            self.map.remove_layer(layer)
+        self.live = []
+        if len(positions) < 2:
+            return
+        for css, width in (("vestigia-track-casing", 7.0), ("vestigia-live", 4.0)):
+            layer = Shumate.PathLayer.new(self.viewport)
+            layer.set_stroke_color(style_color(self, css))
+            layer.set_stroke_width(width)
+            for lat, lon in positions:
+                layer.add_node(Shumate.Coordinate.new_full(lat, lon))
+            self.map.insert_layer_behind(layer, self.markers)
+            self.live.append(layer)
 
     def add_marker(self, lat, lon, icon, label):
         image = Gtk.Image(icon_name=icon, pixel_size=24)

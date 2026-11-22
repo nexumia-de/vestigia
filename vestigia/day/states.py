@@ -29,7 +29,9 @@ class StateStack(Gtk.Stack):
         self.set_visible_child_name("content")
 
     def show_empty(self, day_text):
-        self._show(EMPTY, "find-location-symbolic", "No Data on This Day",
+        title = "No Data on This Day" if not day_text.startswith("in ") \
+            else "No Data in This Period"
+        self._show(EMPTY, "find-location-symbolic", title,
                    f"Nothing was recorded {day_text}.", retry=False)
 
     def show_error(self, error):

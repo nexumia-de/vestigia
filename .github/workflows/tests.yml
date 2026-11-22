@@ -34,12 +34,16 @@ jobs:
             python3-pytest python3-gi gir1.2-gtk-4.0 gir1.2-adw-1 \
             gir1.2-shumate-1.0 gir1.2-xdp-1.0 gir1.2-xdpgtk4-1.0 \
             gir1.2-secret-1 gir1.2-soup-3.0 \
-            xvfb xauth appstream desktop-file-utils
+            xvfb xauth appstream desktop-file-utils libxml2-utils
       - name: Validate metadata
         run: |
           desktop-file-validate data/*.desktop
           appstreamcli validate --no-net data/*.metainfo.xml
           grep -Eiq '^X-Purism-FormFactor=.*mobile;' data/*.desktop
+      # tests/test_gpx.py validates the export against the GPX 1.1
+      # schema, which is downloaded rather than committed (no licence).
+      - name: Fetch the GPX 1.1 schema
+        run: curl -fsSL --retry 3 -o tests/data/gpx/gpx.xsd https://www.topografix.com/GPX/1/1/gpx.xsd
       # test_ui.py drives the real widgets and needs a display.
       - name: Run tests
         env:

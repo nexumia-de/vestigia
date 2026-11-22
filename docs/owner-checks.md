@@ -44,7 +44,52 @@ pre-release (the tag exists); the shared repository picks it up.
   https://flatpak.nexumia.de/ in GNOME Software, start it, and check it
   shows in Phosh's app grid in mobile mode.
 
-## Toolkit follow-ups (issues 5 and 7)
+## A recorded walk on the phone (issue 17)
+
+Everything up to the portal is tested in the container; the portal,
+GeoClue, GNSS and a real network are not.
+
+- [ ] Install the nightly, Preferences → Tracking: keep "Dawarich
+  Account", note the settings. Tap the record button, allow the location
+  dialog, walk 15–30 minutes, switch mobile data off for part of it
+  (the banner should say "waiting for the network"), on again, stop.
+- [ ] In the Dawarich web UI: every point arrives once (compare the
+  count with the points of that day in Travel Log's GPX export), the
+  track looks right; note gaps.
+- [ ] The same with "Other Server" → OwnTracks HTTP to an OwnTracks
+  Recorder (`dev/owntracks/compose.yml` works on a laptop in the same
+  network).
+- [ ] Write the results under "Results on the phone" in
+  [tracking](tracking.md).
+
+## Background tracking on the phone (issues 18, 19, 20 and 21)
+
+The [decision](decisions/background-tracking.md) was taken without
+measurements. On the phone, with the nightly:
+
+- [ ] Start tracking, close the window, let the screen turn off for an
+  hour: does the notification stay, do points keep coming (export the
+  day as GPX and look for gaps)? Once with "Keep the phone awake while
+  tracking" on, once off.
+- [ ] Battery per hour (percent at start and end, `upower -d`) for
+  precise and significant mode, screen off; write numbers and method
+  under "Results on the phone" in [tracking](tracking.md). If the drain
+  with the phone kept awake is unacceptable, change the default in
+  `vestigia/tracker/config.py` and the decision.
+- [ ] The notification "Recording your location" shows on the lock
+  screen and in the notification list; its Stop button stops tracking.
+- [ ] Close M3 in the milestones once the numbers are acceptable.
+- [ ] Turn "Start at Login" on: does Phosh show the Background portal's
+  dialog? After a reboot, does tracking resume without opening the app?
+
+## Month view on the phone (issue 24)
+
+- [ ] Open a busy month in the Month view on the phone; if loading or
+  panning takes more than a few seconds, note it in the
+  [range decision](decisions/range-view.md) and consider the vector
+  tiles described there.
+
+## Toolkit follow-ups (issues 5, 7, 12 and 19)
 
 - [ ] phosh-toolkit (finding of issue 7, possibly the cause of the
   toolkit's unexplained UI test hangs in CI): under Xvfb a visible
@@ -53,6 +98,14 @@ pre-release (the tag exists); the shared repository picks it up.
   `phosh_toolkit.tasks` delivers results with. Vestigia's UI tests set
   `gtk-enable-animations` to false; the toolkit could do the same in
   `testing` or deliver with a higher priority.
+- [ ] phosh-toolkit (issue 12): `location.Location` emits latitude,
+  longitude and accuracy only, though the portal also sends altitude,
+  speed and the fix time; with those in the signal Vestigia's points
+  could carry them (Overland `altitude`/`speed`, GPX `<ele>`).
+- [ ] phosh-toolkit (issue 19): `location.Location.start()` needs a
+  window for the portal's parent; Vestigia subclasses it to pass none
+  when started at login (`vestigia/tracker/source.py`). A `window=None`
+  case in the toolkit would remove the subclass.
 - [ ] phosh-toolkit: give `Keyring` a public way to ask whether a
   secret only lives in memory (Vestigia reads `_memory` in
   `vestigia/secrets.py`); then switch Vestigia to it.

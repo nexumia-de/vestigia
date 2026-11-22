@@ -60,5 +60,13 @@ def load(server_url, day):
                bounds=tuple(d["bounds"]) if d["bounds"] else None)
 
 
+def forget(server_url, day):
+    """Drop one saved day (its visits changed on the server)."""
+    try:
+        _path(server_url, day).unlink()
+    except FileNotFoundError:
+        pass
+
+
 def clear():
     shutil.rmtree(root(), ignore_errors=True)

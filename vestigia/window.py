@@ -6,7 +6,7 @@ from vestigia import NAME
 
 
 class Window(Adw.ApplicationWindow):
-    def __init__(self, app, account, day=None):
+    def __init__(self, app, account, day=None, tracker=None):
         super().__init__(application=app, default_width=1000,
                          default_height=700, title=NAME)
         # Breakpoints need a minimum size (phosh-toolkit adaptive rules).
@@ -14,6 +14,12 @@ class Window(Adw.ApplicationWindow):
         self.account = account
         self.settings_store = account.settings_store
         self.settings = self.settings_store.load()
+        if tracker is None:
+            from vestigia.tracker import config
+            from vestigia.tracking.service import Tracker
+            tracker = Tracker(account, config.Store())
+        self.tracker = tracker
+        self.tracking_store = tracker.settings_store
         self.nav = Adw.NavigationView(vexpand=True)
         # The keyring is locked or missing: the key lives only in memory.
         self.keyring_banner = Adw.Banner(
@@ -32,6 +38,8 @@ class Window(Adw.ApplicationWindow):
 
     def menu_model(self):
         menu = Gio.Menu()
+        menu.append("Statistics", "app.statistics")
+        menu.append("Export Day as GPX…", "app.export-gpx")
         menu.append("Preferences", "app.preferences")
         menu.append(f"About {NAME}", "app.about")
         return menu
@@ -98,8 +106,38 @@ class Window(Adw.ApplicationWindow):
     def show_keyring_state(self, persistent):
         self.keyring_banner.set_revealed(not persistent)
 
+    def tracking_settings_changed(self):
+        """The tracking settings were edited; a running tracker takes
+        them over."""
+        self.tracker.reload()
+
+    def show_statistics(self):
+        if not self.account.configured:
+            return
+        from vestigia.stats.page import StatsPage
+        self.nav.push(StatsPage(self))
+
+    def export_gpx(self):
+        from datetime import date
+
+        from vestigia.tracking.export import export_day
+        day = self.history.day if self.history is not None else date.today()
+        export_day(self, day)
+
     def toast(self, title):
         self.toasts.add_toast(Adw.Toast(title=title))
+
+    def toast_with_undo(self, title, undo=None, on_dismissed=None):
+        """A toast; with `undo`, an Undo button. `on_dismissed` runs when
+        it closes, whether or not Undo was pressed."""
+        toast = Adw.Toast(title=title)
+        if undo is not None:
+            toast.set_button_label("Undo")
+            toast.connect("button-clicked", lambda *_: undo())
+        if on_dismissed is not None:
+            toast.connect("dismissed", lambda *_: on_dismissed())
+        self.toasts.add_toast(toast)
+        return toast
 
     def save_settings(self):
         self.settings_store.save(self.settings)

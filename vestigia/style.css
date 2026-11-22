@@ -26,6 +26,12 @@
   color: var(--accent-fg-color);
 }
 
+/* Today's points recorded on this phone, not yet a server track. */
+.vestigia-live {
+  color: @accent_color;
+  color: var(--accent-color);
+}
+
 /* Visits and the own location as symbolic icons on the map. */
 .vestigia-marker {
   color: @accent_bg_color;
@@ -35,4 +41,10 @@
 .vestigia-me {
   color: @blue_3;
   color: var(--blue-3);
+}
+
+/* The record button while tracking. */
+.vestigia-recording {
+  color: @error_color;
+  color: var(--error-color);
 }

@@ -160,7 +160,8 @@ def test_preferences_keep_style(app):
 
 
 def test_actions(app):
-    for name in ("about", "preferences", "quit"):
+    for name in ("about", "preferences", "quit", "toggle-tracking",
+                 "stop-tracking", "export-gpx", "show-summary"):
         assert app.lookup_action(name) is not None
 
 
@@ -223,6 +224,10 @@ def test_sidebar_summary_and_visit(app):
     assert [r.get_title() for r in page.sidebar.visit_rows] == ["Morning stop"]
     page.split.set_show_sidebar(True)
     page.sidebar.visit_rows[0].emit("activated")
+    run_until(lambda: visible_tag(window) == "visit")
+    # "Show on Map" goes back and centres the map on the visit.
+    window.nav.get_visible_page()._on_map()
+    assert visible_tag(window) == "history"
     viewport = page.map.viewport
     assert abs(viewport.get_latitude() - 37.168572) < 1e-4
     window.destroy()
@@ -322,4 +327,193 @@ def test_show_summary_action(app):
     before = page.split.get_show_sidebar()
     app.activate_action("show-summary", None)
     assert page.split.get_show_sidebar() != before
+    window.destroy()
+
+
+def test_tracking_preferences(app):
+    from vestigia.preferences import PreferencesDialog
+    from vestigia.tracker import config
+    from vestigia.window import Window
+    account = new_account(configured=True)
+    window = Window(app, account)
+    window.present()
+    dialog = PreferencesDialog(window)
+    dialog.present(window)
+    page = dialog.tracking_page
+    # The account's recorded settings arrive (distance_filter 10000).
+    run_until(lambda: page.distance_row.get_value() == 10000)
+    assert not page.custom.get_visible()
+    page.target_row.set_selected(page.target_keys.index(config.TARGET_CUSTOM))
+    assert page.custom.get_visible()
+    page.url_row.set_text("https://owntracks.example.org/pub")
+    page.secret_row.set_text("s3cret")
+    page.interval_row.set_value(60)
+    saved = config.Store().load()
+    assert saved.target_url == "https://owntracks.example.org/pub"
+    assert saved.interval == 60 and "s3cret" not in config.Store().path.read_text()
+    assert account.secrets.target_secret() == "s3cret"
+    run_until(lambda: any(r[0] == "PATCH" for r in account.http.requests), timeout=5)
+    dialog.close()
+    window.destroy()
+
+
+def test_record_button_and_live_track(app, monkeypatch, tmp_path):
+    from datetime import date, datetime
+
+    from gi.repository import GObject
+
+    from vestigia.tracker import config
+    from vestigia.tracker.fix import Fix
+    from vestigia.tracking import service
+    from vestigia.window import Window
+
+    class FakeSource(GObject.Object):
+        __gsignals__ = {"fix": (GObject.SignalFlags.RUN_FIRST, None, (object,)),
+                        "failed": (GObject.SignalFlags.RUN_FIRST, None, (str,))}
+        last = None
+
+        def __init__(self, *args):
+            super().__init__()
+            FakeSource.last = self
+
+        def start(self, window):
+            pass
+
+        def stop(self):
+            pass
+
+    monkeypatch.setattr(service, "Source", FakeSource)
+    account = new_account(configured=True)
+    store = config.Store()
+    store.save(config.TrackingSettings(target_kind=config.TARGET_NONE))
+    tracker = service.Tracker(account, store, tmp_path / "points.sqlite")
+    window = Window(app, account, tracker=tracker)
+    window.present()
+    page = window.nav.get_visible_page()
+    run_until(lambda: page.current is not None)
+    assert page.record_button.get_tooltip_text() == "Start Tracking"
+    page.record_button.set_active(True)
+    assert tracker.running and page.tracking_banner.get_revealed()
+    assert page.record_button.get_tooltip_text() == "Stop Tracking"
+    now = datetime.now().timestamp()
+    FakeSource.last.emit("fix", Fix(37.1685, -3.5962, 5, now - 120))
+    FakeSource.last.emit("fix", Fix(37.1700, -3.5900, 5, now - 60))
+    assert page.day == date.today() and len(page.map.live) == 2
+    assert page.states.state is None          # no longer "no data"
+    page.tracking_banner.emit("button-clicked")
+    assert not tracker.running and not page.record_button.get_active()
+    window.destroy()
+
+
+def test_export_gpx(app, tmp_path):
+    from datetime import datetime
+
+    from gi.repository import Gio
+
+    from vestigia.tracker.fix import Fix
+    from vestigia.tracking import export
+    from vestigia.window import Window
+    window = Window(app, new_account(configured=True))
+    window.present()
+    day = datetime.now().date()
+    assert export.day_bytes(window.tracker.store, day) is None
+    now = datetime.now().timestamp()
+    window.tracker.store.add(Fix(37.1685, -3.5962, 5, now))
+    data = export.day_bytes(window.tracker.store, day)
+    assert b"<trkpt" in data
+    target = Gio.File.new_for_path(str(tmp_path / "day.gpx"))
+    export.save(window, target, data)
+    assert (tmp_path / "day.gpx").read_bytes() == data
+    window.destroy()
+
+
+def open_recorded_visit(app):
+    from datetime import date
+
+    from vestigia.window import Window
+    account = new_account(configured=True)
+    window = Window(app, account)
+    window.present()
+    page = window.history
+    day = date.fromisoformat(recorded.DAY)
+    page.go(day)
+    run_until(lambda: page.current and page.current.day == day)
+    page.sidebar.visit_rows[0].emit("activated")
+    run_until(lambda: visible_tag(window) == "visit")
+    return window, account, page, window.nav.get_visible_page()
+
+
+def patches(account):
+    return [body["visit"] for method, path, _q, body in account.http.requests
+            if method == "PATCH"]
+
+
+def test_visit_confirm_and_undo(app):
+    window, account, page, visit_page = open_recorded_visit(app)
+    run_until(lambda: visit_page.place_rows)
+    assert visit_page.place_rows[0].get_title() == "Stop"
+    visit_page.confirm_button.emit("clicked")
+    assert visible_tag(window) == "history"
+    run_until(lambda: patches(account))
+    assert patches(account) == [{"status": "confirmed"}]
+    window.destroy()
+
+
+def test_visit_decline_is_sent_after_the_toast(app):
+    window, account, page, visit_page = open_recorded_visit(app)
+    visit_page.decline_button.emit("clicked")
+    # Hidden at once, nothing sent while Undo is possible.
+    assert page.sidebar.visit_rows == [] and patches(account) == []
+    window.destroy()
+
+
+def test_visit_rename_keeps_status(app):
+    window, account, page, visit_page = open_recorded_visit(app)
+    visit_page.name_row.set_text("Café")
+    visit_page.name_row.emit("apply")
+    run_until(lambda: patches(account))
+    assert patches(account) == [{"name": "Café", "status": "confirmed"}]
+    window.destroy()
+
+
+def test_statistics_page(app):
+    from vestigia.window import Window
+    window = Window(app, new_account(configured=True))
+    window.present()
+    window.show_statistics()
+    page = window.nav.get_visible_page()
+    assert page.get_tag() == "statistics"
+    run_until(lambda: page.month_rows)
+    assert page.total_rows["points"].value.get_label() == "43"
+    assert page.month_rows[3].value.get_label() == "2 km"
+    run_until(lambda: "reverse geocoding" in page.places.get_description())
+    window.destroy()
+
+
+def test_week_month_and_calendar_marks(app):
+    from datetime import date
+
+    from vestigia.window import Window
+    window = Window(app, new_account(configured=True))
+    window.present()
+    page = window.history
+    day = date.fromisoformat(recorded.DAY)
+    page.go(day)
+    run_until(lambda: page.current and page.current.day == day)
+    page.bar.span_buttons["week"].set_active(True)
+    run_until(lambda: page.current.end == date(2024, 4, 21))
+    assert page.date_button.get_label() == "15 – 21 Apr 2024"
+    assert page.prev_button.get_tooltip_text() == "Previous Week"
+    assert len(page.map.tracks) == 4
+    page.bar.span_buttons["month"].set_active(True)
+    run_until(lambda: page.current.end == date(2024, 4, 30))
+    page.prev_button.emit("clicked")
+    run_until(lambda: page.current.day == date(2024, 3, 1))
+    assert page.states.state == "empty"
+    assert "No Data in This Period" == page.states.status.get_title()
+    # Calendar marks: April 2024 has data on the 21st.
+    page.bar.calendar.select_day(GLib.DateTime.new_local(2024, 4, 21, 0, 0, 0))
+    page.bar._month_shown()
+    run_until(lambda: page.bar.calendar.get_day_is_marked(21))
+    assert not page.bar.calendar.get_day_is_marked(20)
     window.destroy()
