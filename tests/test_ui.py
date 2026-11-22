@@ -398,3 +398,25 @@ def test_record_button_and_live_track(app, monkeypatch, tmp_path):
     page.tracking_banner.emit("button-clicked")
     assert not tracker.running and not page.record_button.get_active()
     window.destroy()
+
+
+def test_export_gpx(app, tmp_path):
+    from datetime import datetime
+
+    from gi.repository import Gio
+
+    from vestigia.tracker.fix import Fix
+    from vestigia.tracking import export
+    from vestigia.window import Window
+    window = Window(app, new_account(configured=True))
+    window.present()
+    day = datetime.now().date()
+    assert export.day_bytes(window.tracker.store, day) is None
+    now = datetime.now().timestamp()
+    window.tracker.store.add(Fix(37.1685, -3.5962, 5, now))
+    data = export.day_bytes(window.tracker.store, day)
+    assert b"<trkpt" in data
+    target = Gio.File.new_for_path(str(tmp_path / "day.gpx"))
+    export.save(window, target, data)
+    assert (tmp_path / "day.gpx").read_bytes() == data
+    window.destroy()

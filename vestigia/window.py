@@ -38,6 +38,7 @@ class Window(Adw.ApplicationWindow):
 
     def menu_model(self):
         menu = Gio.Menu()
+        menu.append("Export Day as GPX…", "app.export-gpx")
         menu.append("Preferences", "app.preferences")
         menu.append(f"About {NAME}", "app.about")
         return menu
@@ -108,6 +109,13 @@ class Window(Adw.ApplicationWindow):
         """The tracking settings were edited; a running tracker takes
         them over."""
         self.tracker.reload()
+
+    def export_gpx(self):
+        from datetime import date
+
+        from vestigia.tracking.export import export_day
+        day = self.history.day if self.history is not None else date.today()
+        export_day(self, day)
 
     def toast(self, title):
         self.toasts.add_toast(Adw.Toast(title=title))

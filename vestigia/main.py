@@ -27,6 +27,7 @@ class Application(Adw.Application):
                                ("preferences", self._on_preferences),
                                ("show-summary", self._on_show_summary),
                                ("toggle-tracking", self._on_toggle_tracking),
+                               ("export-gpx", self._on_export_gpx),
                                ("quit", self._on_quit)):
             action = Gio.SimpleAction.new(name, None)
             action.connect("activate", callback)
@@ -88,6 +89,11 @@ class Application(Adw.Application):
             self.tracker.stop()
         else:
             self.tracker.start(self._window())
+
+    def _on_export_gpx(self, *_):
+        window = self._window()
+        if window:
+            window.export_gpx()
 
     def _on_quit(self, *_):
         self.quit()

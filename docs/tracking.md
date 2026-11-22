@@ -91,8 +91,17 @@ location portal ──fix──▶ filter ──point──▶ store (SQLite) �
    accent colour; the map follows them while the server has nothing for
    today. Tracking that was on is remembered in `tracking.json` (resumed
    in M3).
-6. **GPX export**: a day or range from the store as a GPX 1.1 file
-   through the file chooser portal.
+6. **GPX export** (`vestigia/tracker/gpx.py`, `vestigia/tracking/export.py`):
+   main menu → "Export Day as GPX…" writes the points this phone
+   recorded on the shown day as GPX 1.1: one track, a new segment after
+   a pause of 30 minutes, `<ele>` and `<time>` where known, the accuracy
+   in the extension `vestigia:accuracy` (namespace
+   `https://github.com/nexumia-de/vestigia/gpx/1`; GPX has no accuracy
+   field and `<hdop>` is no distance). Saved through `Gtk.FileDialog`,
+   i.e. the file chooser portal in the Flatpak. Works without any
+   server. Tests validate the output against the GPX 1.1 schema with
+   `xmllint`; the schema is downloaded (CI step, or the `curl` line in
+   `tests/test_gpx.py`), not committed, because it states no licence.
 
 # Settings
 
