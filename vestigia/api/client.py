@@ -142,3 +142,13 @@ class Dawarich:
         days = (self.json("GET", "/api/v1/timeline",
                           {"start_at": start, "end_at": end}) or {}).get("days")
         return days or []
+
+    # Tracking settings of the mobile apps
+
+    def mobile_settings(self):
+        return (self.json("GET", "/api/v1/settings/mobile") or {}).get("settings") or {}
+
+    def update_mobile_settings(self, values):
+        answer = self.json("PATCH", "/api/v1/settings/mobile",
+                           body={"settings": values}) or {}
+        return answer.get("settings") or {}

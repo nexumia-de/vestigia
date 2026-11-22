@@ -47,7 +47,7 @@ Why violet (chosen 2026-11-16 for the scaffold):
 | Day offline | The saved copy with an `AdwBanner` "Offline: showing the saved copy" and Retry | same |
 | Day Summary (sidebar of the day) | `AdwOverlaySplitView` sidebar with its own header: Summary (distance, time moving, places visited as property rows) and Visits (name, local times; tap centres the map). Below 600 sp it overlays the map, starts hidden and opens with the header's sidebar button; not a nested navigation split view (one navigation view per window) | beside the map, shown |
 | Two-Factor Code (pushed) | One entry row and "Verify" | same |
-| Preferences | `AdwPreferencesDialog`: Account (e-mail, server, "Log Out" with Undo toast), Appearance → Style | same |
+| Preferences | `AdwPreferencesDialog`, page General: Account (e-mail, server, "Log Out" with Undo toast), Appearance → Style; page Tracking: Recording (mode, distance, interval, accuracy limit as spin rows), Upload (where to, automatic, batch size), Other Server (shown only for it: protocol, address, log-in method, user, token or password), On This Phone (keep days, same settings on every device) | same |
 
 Every page is pushed onto one `AdwNavigationView`. The app icon (a
 trail of steps across a map to a place marker) and its symbolic variant

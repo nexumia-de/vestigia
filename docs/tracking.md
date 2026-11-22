@@ -85,6 +85,26 @@ location portal ──fix──▶ filter ──point──▶ store (SQLite) �
 6. **GPX export**: a day or range from the store as a GPX 1.1 file
    through the file chooser portal.
 
+# Settings
+
+`$XDG_CONFIG_HOME/vestigia/tracking.json` (`vestigia/tracker/config.py`):
+mode (precise / significant moves), distance (m), interval (s), accuracy
+limit (m), batch size, upload automatically, where points go (the
+Dawarich account, another Overland or OwnTracks server with token or
+user name and password in the keyring, or only this phone), keep time
+(days). Preferences → Tracking edits them (`vestigia/tracking/settings_page.py`).
+
+With a Dawarich account and "Same Settings on Every Device" on (the
+default), mode, distance, interval, batch size and automatic upload are
+shared through `/api/v1/settings/mobile` (`vestigia/api/mobile_settings.py`,
+`vestigia/tracking/sync.py`): when the page opens the server's values
+win; a new account (empty settings) gets the local ones; every change is
+sent once the user stops editing for a second. The server's clamps
+apply (distance 1–10000, interval 1–3600, batch 1–1000). Its `accuracy`
+(a level 1–6) and `track_break` have no documented meaning and stay
+unsynced; the units Vestigia assumes (metres, seconds) are on the
+[owner checks](owner-checks.md).
+
 The pipeline modules (filter, store, uploader, GPX writer) stay free of
 GTK so they run in tests with recorded fixes and recorded server answers.
 

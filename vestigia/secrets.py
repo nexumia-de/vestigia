@@ -11,6 +11,8 @@ from phosh_toolkit.keyring import Keyring
 from vestigia import APP_ID
 
 API_KEY = "api-key"
+# Token or password of a custom upload target.
+TARGET_SECRET = "target-secret"
 # "memory" keeps everything in memory (tests, screenshots, demo data).
 MEMORY_ENV = "VESTIGIA_KEYRING"
 
@@ -18,7 +20,9 @@ MEMORY_ENV = "VESTIGIA_KEYRING"
 class Secrets:
     def __init__(self, keyring=None):
         self.keyring = keyring or Keyring(
-            APP_ID, {API_KEY: "Travel Log: Dawarich API key"}, MEMORY_ENV)
+            APP_ID, {API_KEY: "Travel Log: Dawarich API key",
+                     TARGET_SECRET: "Travel Log: upload target password"},
+            MEMORY_ENV)
 
     def api_key(self):
         return self.keyring.lookup(API_KEY)
@@ -30,6 +34,15 @@ class Secrets:
 
     def clear(self):
         self.keyring.clear(API_KEY)
+
+    def target_secret(self):
+        return self.keyring.lookup(TARGET_SECRET)
+
+    def store_target_secret(self, value):
+        if value:
+            self.keyring.store(TARGET_SECRET, value)
+        else:
+            self.keyring.clear(TARGET_SECRET)
 
     @property
     def persistent(self):

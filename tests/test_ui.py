@@ -323,3 +323,30 @@ def test_show_summary_action(app):
     app.activate_action("show-summary", None)
     assert page.split.get_show_sidebar() != before
     window.destroy()
+
+
+def test_tracking_preferences(app):
+    from vestigia.preferences import PreferencesDialog
+    from vestigia.tracker import config
+    from vestigia.window import Window
+    account = new_account(configured=True)
+    window = Window(app, account)
+    window.present()
+    dialog = PreferencesDialog(window)
+    dialog.present(window)
+    page = dialog.tracking_page
+    # The account's recorded settings arrive (distance_filter 10000).
+    run_until(lambda: page.distance_row.get_value() == 10000)
+    assert not page.custom.get_visible()
+    page.target_row.set_selected(page.target_keys.index(config.TARGET_CUSTOM))
+    assert page.custom.get_visible()
+    page.url_row.set_text("https://owntracks.example.org/pub")
+    page.secret_row.set_text("s3cret")
+    page.interval_row.set_value(60)
+    saved = config.Store().load()
+    assert saved.target_url == "https://owntracks.example.org/pub"
+    assert saved.interval == 60 and "s3cret" not in config.Store().path.read_text()
+    assert account.secrets.target_secret() == "s3cret"
+    run_until(lambda: any(r[0] == "PATCH" for r in account.http.requests), timeout=5)
+    dialog.close()
+    window.destroy()

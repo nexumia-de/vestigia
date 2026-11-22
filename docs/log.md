@@ -1,6 +1,7 @@
 # Directory Update Log
 
 ## 2026-11-22
+* **Update**: Tracking settings (#15): `tracking.json` with mode, filters, upload target and keep time; Preferences → Tracking; sync with `/api/v1/settings/mobile` (server wins, a new account gets the local values, clamps respected, `accuracy` and `track_break` not synced). See [tracking](tracking.md#settings).
 * **Update**: Uploader (#14): `vestigia/tracker/` gains targets, Overland and OwnTracks bodies, the uploader (batches, split and park on `400`/`422`, stop on `401`), back-off and a scheduler that waits for the network. The Dawarich target is filled in by `vestigia/api/upload_target.py`. Tested against recorded answers of Dawarich and of OwnTracks Recorder 1.0.7, now runnable from `dev/owntracks/` (answers `200 []` to anything). See [tracking](tracking.md).
 * **Update**: Point store (#13): `vestigia/tracker/store.py`, SQLite with per-target upload marks and parked points, pruning that never drops a waiting point; tests for order, marks, parking, restart and pruning on the real fixes. See [tracking](tracking.md).
 * **Update**: Location source and filter (#12): `vestigia/tracker/` with `Fix`, the GTK-free `Filter` (accuracy, distance/interval, (0, 0), time order) tested on the real OsmAnd fixes, and `Source` on `phosh_toolkit.location` (precise: `EXACT`; significant: street level, 100 m). See [tracking](tracking.md).

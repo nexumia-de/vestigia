@@ -14,6 +14,8 @@ class Window(Adw.ApplicationWindow):
         self.account = account
         self.settings_store = account.settings_store
         self.settings = self.settings_store.load()
+        from vestigia.tracker import config
+        self.tracking_store = config.Store()
         self.nav = Adw.NavigationView(vexpand=True)
         # The keyring is locked or missing: the key lives only in memory.
         self.keyring_banner = Adw.Banner(
@@ -97,6 +99,13 @@ class Window(Adw.ApplicationWindow):
 
     def show_keyring_state(self, persistent):
         self.keyring_banner.set_revealed(not persistent)
+
+    def tracking_settings_changed(self):
+        """The tracking settings were edited; a running tracker takes
+        them over."""
+        tracker = getattr(self, "tracker", None)
+        if tracker is not None:
+            tracker.reload()
 
     def toast(self, title):
         self.toasts.add_toast(Adw.Toast(title=title))

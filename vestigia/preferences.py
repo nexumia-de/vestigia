@@ -1,5 +1,5 @@
-"""Preferences: the account (who is connected, log out) and the style
-(Follow System, Light, Dark)."""
+"""Preferences: the account (who is connected, log out), the style
+(Follow System, Light, Dark) and the tracking settings."""
 from gi.repository import Adw, Gtk
 from phosh_toolkit.style import style_row
 
@@ -16,6 +16,9 @@ class PreferencesDialog(Adw.PreferencesDialog):
         appearance.add(self.style_row)
         page.add(appearance)
         self.add(page)
+        from vestigia.tracking.settings_page import TrackingPage
+        self.tracking_page = TrackingPage(window, window.tracking_store)
+        self.add(self.tracking_page)
 
     def _account_group(self):
         account = self.window.account
