@@ -1,6 +1,7 @@
 # Directory Update Log
 
 ## 2026-11-22
+* **Update**: Nightly publishing (#3): the remaining steps (phosh-apps `apps.txt`, optional `PUBLISH_TOKEN`, install on the phone) are in [owner checks](owner-checks.md); the workflow already builds and publishes the nightly.
 * **Update**: Real answers of a local Dawarich 1.18.1 server recorded into `tests/data/dawarich/` with the new `dev/dawarich/record.py` (#2): health, login with and without 2FA, users/me, mobile settings (empty, clamped), Overland and OwnTracks uploads with `401`/`422`, points with pagination, tracks after a recalculation, timeline, visits (create, rename, confirm, decline), stats, tracked months, countries and cities. Positions from a real OsmAnd recording in Dawarich's own test fixtures (`tests/data/source/`). Answered in [Dawarich API](dawarich-api.md): tracks come from a 6-hour look-back job (older points wait up to 12 h or need `POST /api/v1/recalculations`), declined visits disappear, the points limit answers `401`, MVT tiles take the Bearer header. New decision [oldest server version](decisions/minimum-server-version.md) (1.18.1); [standard upload protocols](decisions/upload-protocols.md) accepted. New [owner checks](owner-checks.md).
 
 ## 2026-11-16

@@ -29,3 +29,17 @@ the concept file named in the item.
   and note the units it shows for distance filter, time filter,
   accuracy and track break (open question 4 in
   [Dawarich API](dawarich-api.md)).
+
+## Nightly builds on the phone (issue 3)
+
+The workflow side is in place: `.github/workflows/flatpak.yml` builds
+Travel Log (Nightly) on every push to `main` and moves the `nightly`
+pre-release (the tag exists); the shared repository picks it up.
+
+- [ ] In nexumia-de/phosh-apps, add the line `nexumia-de/vestigia` to
+  `apps.txt` (this session has no write access there).
+- [ ] Optional: add the secret `PUBLISH_TOKEN` to this repository so
+  pushes notify phosh-apps at once instead of with its daily run.
+- [ ] On the phone, install *Travel Log (Nightly)* from
+  https://flatpak.nexumia.de/ in GNOME Software, start it, and check it
+  shows in Phosh's app grid in mobile mode.
