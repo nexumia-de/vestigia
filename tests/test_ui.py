@@ -206,3 +206,23 @@ def test_day_view(app):
     assert page.map.tracks == []
     assert page.date_button.get_label() == "Sat, 20 Apr 2024"
     window.destroy()
+
+
+def test_sidebar_summary_and_visit(app):
+    from datetime import date
+
+    from vestigia.window import Window
+    window = Window(app, new_account(configured=True))
+    window.set_default_size(360, 720)
+    window.present()
+    page = window.nav.get_visible_page()
+    page.go(date.fromisoformat(recorded.DAY))
+    run_until(lambda: page.current and page.current.day == date.fromisoformat(recorded.DAY))
+    assert page.sidebar.distance_row.get_subtitle() == "2.1 km"
+    assert page.sidebar.moving_row.get_subtitle() == "37 min"
+    assert [r.get_title() for r in page.sidebar.visit_rows] == ["Morning stop"]
+    page.split.set_show_sidebar(True)
+    page.sidebar.visit_rows[0].emit("activated")
+    viewport = page.map.viewport
+    assert abs(viewport.get_latitude() - 37.168572) < 1e-4
+    window.destroy()

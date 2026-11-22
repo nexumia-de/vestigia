@@ -1,13 +1,17 @@
-"""The history page: one day's tracks on the map. Previous/next day and
+"""The history page: one day's tracks on the map, the summary and visits
+in a sidebar that overlays the map on the phone. Previous/next day and
 the date picker sit in a bottom bar within thumb reach (phosh-toolkit
-adaptive rule 10); the header keeps title and menu."""
+adaptive rule 10); the header keeps title, sidebar toggle and menu. One
+navigation view per window, so the sidebar is an AdwOverlaySplitView,
+not a nested navigation split view (rule 9)."""
 from datetime import date, timedelta
 
-from gi.repository import Adw, GLib, Gtk
+from gi.repository import Adw, GLib, GObject, Gtk
 from phosh_toolkit import tasks, widgets
 
 from vestigia import NAME
 from vestigia.day import model
+from vestigia.day.sidebar import Sidebar
 from vestigia.map.view import MapView
 
 
@@ -33,6 +37,11 @@ class DayPage(Adw.NavigationPage):
         self.title = Adw.WindowTitle(title=NAME)
         header.set_title_widget(self.title)
         header.pack_end(window.menu_button())
+        self.sidebar_button = Gtk.ToggleButton(icon_name="sidebar-show-symbolic",
+                                               tooltip_text="Day Summary")
+        self.sidebar_button.update_property([Gtk.AccessibleProperty.LABEL],
+                                            ["Day Summary"])
+        header.pack_start(self.sidebar_button)
         self.header = header
         self.toolbar.add_top_bar(header)
 
@@ -44,10 +53,28 @@ class DayPage(Adw.NavigationPage):
         self.spinner.set_margin_top(12)
         self.spinner.set_visible(False)
         self.overlay.add_overlay(self.spinner)
-        self.content = self.overlay
-        self.toolbar.set_content(self.content)
+        self.toolbar.set_content(self.overlay)
         self.toolbar.add_bottom_bar(self._day_bar())
-        self.set_child(self.toolbar)
+
+        self.sidebar = Sidebar()
+        self.sidebar.connect("visit-activated", self._on_visit)
+        self.split = Adw.OverlaySplitView(sidebar=self.sidebar,
+                                          content=self.toolbar,
+                                          show_sidebar=True)
+        self.split.bind_property("show-sidebar", self.sidebar_button, "active",
+                                 GObject.BindingFlags.BIDIRECTIONAL |
+                                 GObject.BindingFlags.SYNC_CREATE)
+        # Phone width: the sidebar overlays the map and starts hidden. The
+        # bin's minimum stays below the window's 360×294, which includes
+        # the window frame.
+        self.bin = Adw.BreakpointBin(child=self.split, width_request=300,
+                                     height_request=200)
+        breakpoint = Adw.Breakpoint.new(Adw.BreakpointCondition.parse(
+            "max-width: 600sp"))
+        breakpoint.add_setter(self.split, "collapsed", True)
+        breakpoint.add_setter(self.split, "show-sidebar", False)
+        self.bin.add_breakpoint(breakpoint)
+        self.set_child(self.bin)
         self.connect("shown", lambda *_: self._fit())
         self.load()
 
@@ -120,7 +147,13 @@ class DayPage(Adw.NavigationPage):
         for visit in result.visits:
             self.map.add_marker(visit.lat, visit.lon, "mark-location-symbolic",
                                 visit.name)
+        self.sidebar.show_day(result)
         self._fit()
+
+    def _on_visit(self, sidebar, visit):
+        if self.split.get_collapsed():
+            self.split.set_show_sidebar(False)
+        self.map.center(visit.lat, visit.lon, max(self.map.viewport.get_zoom_level(), 16))
 
     def show_error(self, error):
         from vestigia.account.errors import describe

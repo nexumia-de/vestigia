@@ -155,6 +155,8 @@ class MapView(Gtk.Overlay):
         return GLib.SOURCE_REMOVE
 
     def center(self, lat, lon, zoom=None):
+        """Centre on a place the user chose; no refit after that."""
+        self._touched = True
         if zoom is not None:
             self.viewport.set_zoom_level(zoom)
         self.map.center_on(lat, lon)

@@ -26,6 +26,8 @@ python.install_sources(
   'vestigia/day/__init__.py',
   'vestigia/day/model.py',
   'vestigia/day/page.py',
+  'vestigia/day/sidebar.py',
+  'vestigia/day/summary.py',
   'vestigia/map/__init__.py',
   'vestigia/map/fit.py',
   'vestigia/map/view.py',
