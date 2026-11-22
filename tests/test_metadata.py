@@ -49,7 +49,18 @@ def test_manifest_permissions_and_pinned_toolkit():
                                    "--share=network"])
     commit = re.search(r"- name: phosh-toolkit.*?commit: (\w+)", manifest, re.S)
     assert commit and len(commit.group(1)) == 40
-    assert "- name: libshumate" in manifest
+    assert "- toolkit/flatpak/libshumate.yml" in manifest
+
+
+def test_toolkit_submodule_matches_the_manifest():
+    """The shared Flatpak modules come from the submodule at the same
+    commit as the phosh-toolkit module (toolkit docs/toolkit-usage.md)."""
+    import subprocess
+    manifest = (ROOT / f"{APP_ID}.yml").read_text()
+    commit = re.search(r"- name: phosh-toolkit.*?commit: (\w+)", manifest, re.S)
+    entry = subprocess.run(["git", "ls-files", "-s", "toolkit"], cwd=ROOT,
+                           capture_output=True, text=True, check=True).stdout
+    assert entry.split()[1] == commit.group(1)
 
 
 def test_every_module_has_a_checker():

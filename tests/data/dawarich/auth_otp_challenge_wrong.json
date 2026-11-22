@@ -1,0 +1,26 @@
+{
+ "request": {
+  "method": "POST",
+  "path": "/api/v1/auth/otp_challenge",
+  "query": {},
+  "body": {
+   "challenge_token": "REDACTED",
+   "otp_code": "000000"
+  }
+ },
+ "status": 401,
+ "headers": {
+  "content-type": "application/json; charset=utf-8",
+  "x-dawarich-version": "1.18.1",
+  "x-dawarich-response": "Hey, I'm alive!"
+ },
+ "body": {
+  "error": "auth_failed",
+  "message": "Invalid two-factor code"
+ },
+ "recorded": {
+  "server": "Dawarich 1.18.1",
+  "at": "2026-11-22",
+  "by": "dev/dawarich/record.py"
+ }
+}

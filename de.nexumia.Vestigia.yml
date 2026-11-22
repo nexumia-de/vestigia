@@ -24,47 +24,15 @@ cleanup:
 # texts into /app/share/licenses/<app id>/<module>/, which CI checks.
 # Inventory with licences: docs/dependencies.md.
 modules:
-  # The map widget (docs/decisions/map-libshumate.md), as in Cirro until the
-  # toolkit has a shared snippet (nexumia-de/phosh-toolkit#22):
-  # org.gnome.Platform//51 ships neither libshumate nor protobuf-c.
-  - name: protobuf-c
-    buildsystem: autotools
-    config-opts:
-      - --disable-protoc
-    post-install:
-      - install -Dm644 LICENSE -t ${FLATPAK_DEST}/share/licenses/${FLATPAK_ID}/protobuf-c
-    sources:
-      - type: archive
-        url: https://github.com/protobuf-c/protobuf-c/releases/download/v1.5.2/protobuf-c-1.5.2.tar.gz
-        sha256: e2c86271873a79c92b58fef7ebf8de1aa0df4738347a8bd5d4e65a80a16d0d24
-        x-checker-data:
-          type: json
-          url: https://api.github.com/repos/protobuf-c/protobuf-c/releases/latest
-          version-query: .tag_name | sub("^v"; "")
-          url-query: .assets[] | select(.name == "protobuf-c-" + $version + ".tar.gz") | .browser_download_url
+  # The map widget (docs/decisions/map-libshumate.md) with protobuf-c:
+  # the toolkit's shared module file, through the git submodule toolkit/
+  # at the same tag as the phosh-toolkit module below
+  # (phosh-toolkit docs/toolkit-usage.md, "Shared Flatpak modules").
+  - toolkit/flatpak/libshumate.yml
 
-  - name: libshumate
-    buildsystem: meson
-    config-opts:
-      - --libdir=lib
-      - -Dgtk_doc=false
-      - -Dvapi=false
-      - -Ddemos=false
-      - -Dsysprof=disabled
-    post-install:
-      # meson builds in _flatpak_build/, the licence is in the source root.
-      - install -Dm644 ../COPYING -t ${FLATPAK_DEST}/share/licenses/${FLATPAK_ID}/libshumate
-    sources:
-      - type: archive
-        url: https://download.gnome.org/sources/libshumate/1.7/libshumate-1.7.0.tar.xz
-        sha256: 3896cc4b6a7bf83141c27df23ce48cdd68467603bc6b764960307cdcbbef80e5
-        x-checker-data:
-          type: gnome
-          name: libshumate
-          stable-only: true
-
-  # Shared settings and style code (phosh-toolkit
-  # docs/shared-connection.md), next to Vestigia's package in site-packages.
+  # Shared code: settings, style, keyring, HTTP, tasks, own location
+  # (phosh-toolkit docs/shared-connection.md), next to Vestigia's package
+  # in site-packages.
   - name: phosh-toolkit
     buildsystem: simple
     build-commands:
@@ -73,8 +41,8 @@ modules:
     sources:
       - type: git
         url: https://github.com/nexumia-de/phosh-toolkit.git
-        tag: v0.4.0
-        commit: 89e3505aa290c4303e707229e09b33c3d4357fee
+        tag: v0.7.0
+        commit: 13275a742f62d7e7d2b80265b4bcabe0dfbbebf1
         x-checker-data:
           type: git
           tag-pattern: ^v([\d.]+)$
@@ -89,4 +57,5 @@ modules:
           - repo
           - tests
           - dev
+          - toolkit
           - .phosh-toolkit

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "method": "PATCH",
+  "path": "/api/v1/visits/1",
+  "query": {},
+  "body": {
+   "visit": {
+    "status": "suggested"
+   }
+  }
+ },
+ "status": 404,
+ "headers": {
+  "content-type": "application/json; charset=utf-8",
+  "x-dawarich-version": "1.18.1",
+  "x-dawarich-response": "Hey, I'm alive and authenticated!"
+ },
+ "body": {
+  "error": "Record not found"
+ },
+ "recorded": {
+  "server": "Dawarich 1.18.1",
+  "at": "2026-11-22",
+  "by": "dev/dawarich/record.py"
+ }
+}

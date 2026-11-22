@@ -1,0 +1,55 @@
+{
+ "request": {
+  "method": "GET",
+  "path": "/api/0/last",
+  "query": {},
+  "body": null
+ },
+ "status": 200,
+ "headers": {
+  "content-type": "application/json; charset=utf-8"
+ },
+ "body": [
+  {
+   "_type": "location",
+   "lat": 37.1685682,
+   "lon": -3.596212,
+   "alt": 719,
+   "acc": 5,
+   "tid": "vg",
+   "tst": 1713690451,
+   "tzname": "Europe/Madrid",
+   "_http": true,
+   "topic": "owntracks/demo/phone",
+   "username": "demo",
+   "device": "phone",
+   "ghash": "eyt7qnm",
+   "isotst": "2024-04-21T09:07:31Z",
+   "disptst": "2024-04-21 09:07:31",
+   "isolocal": "2024-04-21T11:07:31+0200"
+  },
+  {
+   "_type": "location",
+   "lat": 37.1685682,
+   "lon": -3.596212,
+   "alt": 719,
+   "acc": 5,
+   "tid": "vg",
+   "tst": 1713690451,
+   "tzname": "Europe/Madrid",
+   "_http": true,
+   "topic": "owntracks/owntracks/phone",
+   "username": "owntracks",
+   "device": "phone",
+   "ghash": "eyt7qnm",
+   "isotst": "2024-04-21T09:07:31Z",
+   "disptst": "2024-04-21 09:07:31",
+   "isolocal": "2024-04-21T11:07:31+0200"
+  }
+ ],
+ "recorded": {
+  "server": "OwnTracks Recorder 1.0.7",
+  "at": "2026-11-22",
+  "by": "dev/owntracks/record.py"
+ }
+}

@@ -1,0 +1,66 @@
+{
+ "request": {
+  "method": "GET",
+  "path": "/api/v1/timeline",
+  "query": {
+   "start_at": "2024-04-21T00:00:00Z",
+   "end_at": "2024-04-21T23:59:59Z"
+  },
+  "body": null
+ },
+ "status": 200,
+ "headers": {
+  "content-type": "application/json; charset=utf-8",
+  "x-dawarich-version": "1.18.1",
+  "x-dawarich-response": "Hey, I'm alive and authenticated!"
+ },
+ "body": {
+  "days": [
+   {
+    "date": "2024-04-21",
+    "summary": {
+     "total_distance": 2.1,
+     "distance_unit": "km",
+     "places_visited": 0,
+     "time_moving_minutes": 37,
+     "time_stationary_minutes": 0,
+     "suggested_count": 0,
+     "confirmed_count": 0,
+     "declined_count": 0,
+     "mode_distances": {}
+    },
+    "bounds": {
+     "sw_lat": 37.17042,
+     "sw_lng": -3.5642,
+     "ne_lat": 37.17575,
+     "ne_lng": -3.54178
+    },
+    "entries": [
+     {
+      "type": "journey",
+      "track_id": 2,
+      "started_at": "2024-04-21T12:09:48+02:00",
+      "ended_at": "2024-04-21T12:46:24+02:00",
+      "duration": 2196,
+      "distance": 2.1,
+      "distance_unit": "km",
+      "dominant_mode": "running",
+      "avg_speed": 3.5,
+      "speed_unit": "km/h",
+      "elevation_gain": 89,
+      "elevation_loss": 4,
+      "continuation_of_date": null,
+      "day_distance": null,
+      "day_duration": null,
+      "moving_duration": 70
+     }
+    ]
+   }
+  ]
+ },
+ "recorded": {
+  "server": "Dawarich 1.18.1",
+  "at": "2026-11-22",
+  "by": "dev/dawarich/record.py"
+ }
+}

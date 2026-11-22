@@ -15,7 +15,7 @@ generated: { by: claude-code/2.1.311, at: 2026-10-27T16:30:00Z }
 | `dawarich.app` | Dawarich documentation (docs only); proxy `403` on 2026-10-27 even after `*.dawarich.app` was allowed: the wildcard does not cover the bare domain |
 | `github.com` | Dawarich source (read with git; the session proxy serves anonymous clones of public repositories), Flatpak sources |
 | `owntracks.org` | OwnTracks booklet (docs only; read from its GitHub repository instead); proxy `403` on 2026-10-27, also after `*.owntracks.org` was allowed (bare domain) |
-| `www.topografix.com` | GPX 1.1 schema (docs only); answered on 2026-10-27 after `*.topografix.com` was allowed |
+| `www.topografix.com` | GPX 1.1 schema, downloaded for `tests/test_gpx.py` (CI and locally); answered on 2026-10-27 and 2026-11-22 |
 | `download.gnome.org` | libshumate source archive for the Flatpak build; answered on 2026-10-27 |
 
 Plus the toolkit's needs (Flathub, apt, GitHub). In a cloud agent
@@ -25,9 +25,38 @@ settings (allowed domains).
 # Working without a server
 
 - Tests use real answers recorded from a Dawarich server and stored in
-  `tests/data/dawarich/`, with the API key, e-mail addresses and exact
-  home positions removed (positions shifted, not invented).
+  `tests/data/dawarich/`, one JSON file per answer (request, status,
+  headers, body, `recorded` with server version and date), with the API
+  key, password, 2FA secret and challenge tokens replaced by
+  `REDACTED`. Recordings from a personal server must also shift home
+  positions (shifted, not invented) and replace e-mail addresses.
+- Record again with the local server running:
+  `python3 dev/dawarich/record.py` (standard library only). It uploads
+  `tests/data/source/gpx_track_multiple_segments.gpx`, a real OsmAnd
+  recording from Dawarich's test fixtures, asks for a track
+  recalculation, creates one suggested visit through the API, and turns
+  2FA on and off again for the login answers. Start from a fresh server
+  (`docker compose -f dev/dawarich/compose.yml down -v`, then `up.sh`),
+  otherwise ids and the recalculation answer differ.
+- A second upload receiver, OwnTracks Recorder 1.0.7, runs from
+  `dev/owntracks/compose.yml` (image pinned by digest, HTTP on
+  `127.0.0.1:8083`, MQTT off); `python3 dev/owntracks/record.py` records
+  its answers into `tests/data/owntracks/`. Checked 2026-11-22.
+- Where the dev server cannot produce an answer (countries and cities
+  need reverse geocoding), `tests/data/documented/` holds the examples
+  of Dawarich's own OpenAPI description, each marked
+  `"documented": {"recorded": false, "source": …}`; never as recordings.
 - Never replace missing live answers with invented samples.
+- Demo mode: `VESTIGIA_DEMO_DATA=tests/data/dawarich` makes the app
+  answer from these recordings (`vestigia/demo.py`), open the recorded
+  day 2024-04-21, keep the key in memory and its settings under
+  `$XDG_CACHE_HOME/vestigia/demo/`. The store screenshots in
+  `release.toml` use it (`day`, and `summary` through the action
+  `app.show-summary`, also F9). Checked locally at 360×720:
+
+  ```sh
+  ../phosh-toolkit/scripts/screenshot.sh -e VESTIGIA_DEMO_DATA=$PWD/tests/data/dawarich -- /usr/bin/python3.12 -m vestigia
+  ```
 
 # Local Dawarich server
 

@@ -1,0 +1,41 @@
+{
+ "request": {
+  "method": "POST",
+  "path": "/api/v1/overland/batches",
+  "query": {},
+  "body": {
+   "locations": [
+    {
+     "type": "Feature",
+     "geometry": {
+      "type": "Point",
+      "coordinates": [
+       0.0,
+       0.0
+      ]
+     },
+     "properties": {
+      "timestamp": "2024-04-21T09:07:31Z",
+      "altitude": 719.2,
+      "horizontal_accuracy": 5.3,
+      "speed": 0.3
+     }
+    }
+   ]
+  }
+ },
+ "status": 201,
+ "headers": {
+  "content-type": "application/json; charset=utf-8",
+  "x-dawarich-version": "1.18.1",
+  "x-dawarich-response": "Hey, I'm alive and authenticated!"
+ },
+ "body": {
+  "result": "ok"
+ },
+ "recorded": {
+  "server": "Dawarich 1.18.1",
+  "at": "2026-11-22",
+  "by": "dev/dawarich/record.py"
+ }
+}

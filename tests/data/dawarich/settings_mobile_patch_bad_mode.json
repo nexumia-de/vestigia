@@ -1,0 +1,41 @@
+{
+ "request": {
+  "method": "PATCH",
+  "path": "/api/v1/settings/mobile",
+  "query": {},
+  "body": {
+   "settings": {
+    "tracking_mode": "sometimes"
+   }
+  }
+ },
+ "status": 200,
+ "headers": {
+  "content-type": "application/json; charset=utf-8",
+  "x-dawarich-version": "1.18.1",
+  "x-dawarich-response": "Hey, I'm alive and authenticated!"
+ },
+ "body": {
+  "settings": {
+   "accuracy": 1,
+   "batch_size": 50,
+   "time_filter": 30,
+   "tracking_mode": "precise",
+   "distance_filter": 10000,
+   "upload_automatically": true
+  },
+  "updated_at": "2026-11-22T07:40:44+01:00",
+  "capabilities": {
+   "photo_library_import": {
+    "version": 1
+   }
+  },
+  "status": "success",
+  "message": "Settings updated"
+ },
+ "recorded": {
+  "server": "Dawarich 1.18.1",
+  "at": "2026-11-22",
+  "by": "dev/dawarich/record.py"
+ }
+}

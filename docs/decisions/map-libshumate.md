@@ -31,3 +31,18 @@ attribution) is shared with Cirro through phosh-toolkit.
   snippets come from the toolkit rather than being copied.
 - Long ranges may need Dawarich's vector tiles instead of GeoJSON
   ([Dawarich API](../dawarich-api.md), open question 6).
+
+# Implementation (2026-11-22, issue 6)
+
+`vestigia/map/view.py`: `Shumate.SimpleMap` with an OSM raster source
+(`https://tile.openstreetmap.org/{z}/{x}/{y}.png`, attribution
+"© OpenStreetMap contributors" linking to the copyright page, as the OSM
+tile usage policy asks), `Shumate.set_user_agent()` with Vestigia's
+`User-Agent`, and libshumate's built-in tile cache (100 MB in
+`$XDG_CACHE_HOME`, files keyed by source). Tracks are two `PathLayer`s
+(casing and line) with colours read from `style.css` classes; visits and
+the own location are `MarkerLayer`s. The own location comes from
+`phosh_toolkit.location` (portal, `EXACT`, 10 m) after a tap on "Show My
+Location" (tooltip and accessible label). `VESTIGIA_TILES=off` leaves the
+tiles out in tests.
+

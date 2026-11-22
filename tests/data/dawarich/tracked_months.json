@@ -1,0 +1,27 @@
+{
+ "request": {
+  "method": "GET",
+  "path": "/api/v1/points/tracked_months",
+  "query": {},
+  "body": null
+ },
+ "status": 200,
+ "headers": {
+  "content-type": "application/json; charset=utf-8",
+  "x-dawarich-version": "1.18.1",
+  "x-dawarich-response": "Hey, I'm alive and authenticated!"
+ },
+ "body": [
+  {
+   "year": 2024,
+   "months": [
+    "Apr"
+   ]
+  }
+ ],
+ "recorded": {
+  "server": "Dawarich 1.18.1",
+  "at": "2026-11-22",
+  "by": "dev/dawarich/record.py"
+ }
+}
