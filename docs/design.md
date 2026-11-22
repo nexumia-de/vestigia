@@ -38,8 +38,9 @@ Why violet (chosen 2026-11-16 for the scaffold):
 
 | Screen | Narrow (≤ 600 sp) | Wide |
 |---|---|---|
-| Start (placeholder until M1) | `AdwStatusPage` with the app's symbolic icon, "Nothing Here Yet" | same |
-| Preferences | `AdwPreferencesDialog`, Appearance → Style | same |
+| Connect to Dawarich (no account) | `AdwPreferencesPage`: server address; log in with e-mail and password (pill "Log In", suggested) or paste the API key ("Use Key"); errors in an `AdwBanner`; scrolls for the on-screen keyboard, nothing focused when it opens | same, centred column |
+| Two-Factor Code (pushed) | One entry row and "Verify" | same |
+| Preferences | `AdwPreferencesDialog`: Account (e-mail, server, "Log Out" with Undo toast), Appearance → Style | same |
 
 Every page is pushed onto one `AdwNavigationView`. The app icon (a
 trail of steps across a map to a place marker) and its symbolic variant
@@ -48,6 +49,7 @@ are drawn for Vestigia, AGPL like the app; no Dawarich logo.
 # Review checklist
 
 The toolkit's checklist, and for Vestigia: no horizontal scrolling at
-360 px, icon-only buttons (menu) have tooltips and labels.
+360 px, icon-only buttons (menu) have tooltips and labels, "Dawarich"
+only to say what the app connects to, never as the app's name.
 
 [^accents]: phosh-toolkit decision "One accent colour per app"

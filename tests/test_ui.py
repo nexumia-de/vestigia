@@ -13,7 +13,24 @@ gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
 from gi.repository import Adw, GLib  # noqa: E402
 
-from vestigia import APP_ID, NAME, settings  # noqa: E402
+from phosh_toolkit.testing import run_until  # noqa: E402
+
+from vestigia import secrets, settings  # noqa: E402
+from vestigia.account import Account  # noqa: E402
+from vestigia.api import recorded  # noqa: E402
+
+
+@pytest.fixture(autouse=True)
+def memory_keyring(monkeypatch):
+    monkeypatch.setenv(secrets.MEMORY_ENV, "memory")
+
+
+def new_account(configured=False, **kwargs):
+    account = Account(settings.Store(), secrets.Secrets(),
+                      recorded.RecordedHttp(**kwargs))
+    if configured:
+        account.save("https://dawarich.example.org", recorded.KEY)
+    return account
 
 
 @pytest.fixture(scope="module")
@@ -34,20 +51,88 @@ def iterate(times=20):
             ctx.iteration(False)
 
 
-def test_start_page(app):
+def test_setup_page_without_account(app):
     from vestigia.window import Window
-    window = Window(app, settings.Store())
+    window = Window(app, new_account())
     window.present()
     iterate()
     page = window.nav.get_visible_page()
-    assert page.get_tag() == "start" and page.get_title() == NAME
-    assert window.status.get_icon_name() == f"{APP_ID}-symbolic"
+    assert page.get_tag() == "setup" and page.get_title() == "Connect to Dawarich"
+    window.destroy()
+
+
+def visible_tag(window):
+    page = window.nav.get_visible_page()
+    return page.get_tag() if page else None
+
+
+def test_log_in_with_password(app):
+    from vestigia.window import Window
+    window = Window(app, new_account())
+    window.present()
+    page = window.nav.get_visible_page()
+    page.url_row.set_text("dawarich.example.org")
+    page.email_row.set_text("demo@vestigia.test")
+    page.password_row.set_text(recorded.PASSWORD)
+    page.login_button.emit("clicked")
+    run_until(lambda: visible_tag(window) == "history")
+    assert window.account.server_url == "https://dawarich.example.org"
+    assert window.account.secrets.api_key() == recorded.KEY
+    assert window.account.email == "demo@vestigia.test"
+    assert "password" not in settings.Store().path.read_text()
+    window.destroy()
+
+
+def test_log_in_with_two_factor(app):
+    from vestigia.window import Window
+    window = Window(app, new_account(two_factor=True))
+    window.present()
+    page = window.nav.get_visible_page()
+    page.url_row.set_text("https://dawarich.example.org")
+    page.email_row.set_text("demo@vestigia.test")
+    page.password_row.set_text(recorded.PASSWORD)
+    page.login_button.emit("clicked")
+    run_until(lambda: visible_tag(window) == "otp")
+    otp = window.nav.get_visible_page()
+    otp.code_row.set_text("000000")
+    otp.button.emit("clicked")
+    run_until(lambda: otp.banner.get_revealed())
+    otp.code_row.set_text(recorded.OTP)
+    otp.button.emit("clicked")
+    run_until(lambda: visible_tag(window) == "history")
+    window.destroy()
+
+
+def test_wrong_key_is_shown(app):
+    from vestigia.window import Window
+    window = Window(app, new_account())
+    window.present()
+    page = window.nav.get_visible_page()
+    page.url_row.set_text("https://dawarich.example.org")
+    page.key_row.set_text("not-the-key")
+    page.key_button.emit("clicked")
+    run_until(lambda: page.banner.get_revealed())
+    assert "rejected" in page.banner.get_title()
+    assert window.account.secrets.api_key() is None
+    window.destroy()
+
+
+def test_log_out_and_undo(app):
+    from vestigia.window import Window
+    window = Window(app, new_account(configured=True))
+    window.present()
+    iterate()
+    assert visible_tag(window) == "history"
+    window.log_out()
+    assert visible_tag(window) == "setup" and not window.account.configured
+    window._undo_log_out(("https://dawarich.example.org", recorded.KEY, ""))
+    assert visible_tag(window) == "history" and window.account.configured
     window.destroy()
 
 
 def test_keyring_banner(app):
     from vestigia.window import Window
-    window = Window(app, settings.Store())
+    window = Window(app, new_account())
     assert not window.keyring_banner.get_revealed()
     window.show_keyring_state(False)
     assert window.keyring_banner.get_revealed()
@@ -57,7 +142,7 @@ def test_keyring_banner(app):
 def test_preferences_keep_style(app):
     from vestigia.preferences import PreferencesDialog
     from vestigia.window import Window
-    window = Window(app, settings.Store())
+    window = Window(app, new_account(configured=True))
     window.present()
     dialog = PreferencesDialog(window)
     dialog.present(window)

@@ -19,6 +19,7 @@ class Application(Adw.Application):
         super().__init__(application_id=APP_ID,
                          flags=Gio.ApplicationFlags.DEFAULT_FLAGS)
         self.settings_store = None
+        self.account = None
         for name, callback in (("about", self._on_about),
                                ("preferences", self._on_preferences),
                                ("quit", self._on_quit)):
@@ -41,15 +42,17 @@ class Application(Adw.Application):
             Gtk.IconTheme.get_for_display(display).add_search_path(str(icons))
         from phosh_toolkit import style
 
-        from vestigia import settings
+        from vestigia import secrets, settings
+        from vestigia.account import Account
         self.settings_store = settings.Store()
+        self.account = Account(self.settings_store, secrets.Secrets())
         style.apply(self.settings_store.load().style)
 
     def do_activate(self):
         from vestigia.window import Window
         window = self.props.active_window
         if window is None:
-            window = Window(self, self.settings_store)
+            window = Window(self, self.account)
             if NIGHTLY:
                 window.add_css_class("devel")
         window.present()
