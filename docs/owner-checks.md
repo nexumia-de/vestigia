@@ -44,6 +44,24 @@ pre-release (the tag exists); the shared repository picks it up.
   https://flatpak.nexumia.de/ in GNOME Software, start it, and check it
   shows in Phosh's app grid in mobile mode.
 
+## A recorded walk on the phone (issue 17)
+
+Everything up to the portal is tested in the container; the portal,
+GeoClue, GNSS and a real network are not.
+
+- [ ] Install the nightly, Preferences → Tracking: keep "Dawarich
+  Account", note the settings. Tap the record button, allow the location
+  dialog, walk 15–30 minutes, switch mobile data off for part of it
+  (the banner should say "waiting for the network"), on again, stop.
+- [ ] In the Dawarich web UI: every point arrives once (compare the
+  count with the points of that day in Travel Log's GPX export), the
+  track looks right; note gaps.
+- [ ] The same with "Other Server" → OwnTracks HTTP to an OwnTracks
+  Recorder (`dev/owntracks/compose.yml` works on a laptop in the same
+  network).
+- [ ] Write the results under "Results on the phone" in
+  [tracking](tracking.md).
+
 ## Toolkit follow-ups (issues 5, 7 and 12)
 
 - [ ] phosh-toolkit (finding of issue 7, possibly the cause of the

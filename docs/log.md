@@ -1,6 +1,7 @@
 # Directory Update Log
 
 ## 2026-11-22
+* **Update**: End-to-end walk on the phone (#17): steps for Dawarich and an OwnTracks Recorder moved to the [owner checks](owner-checks.md); [tracking](tracking.md) has a place for the results.
 * **Update**: GPX export (#30): "Export Day as GPX…" in the main menu writes the day's own points as GPX 1.1 through the file chooser portal; validated against the official schema in tests (downloaded in CI, git-ignored locally). See [tracking](tracking.md).
 * **Update**: Start/stop tracking (#16): `vestigia/tracking/service.py` ties source, filter, store and scheduler together (application-owned); record button and Ctrl+R, a status banner with Stop, live track of today's own points. See [tracking](tracking.md).
 * **Update**: Tracking settings (#15): `tracking.json` with mode, filters, upload target and keep time; Preferences → Tracking; sync with `/api/v1/settings/mobile` (server wins, a new account gets the local values, clamps respected, `accuracy` and `track_break` not synced). See [tracking](tracking.md#settings).

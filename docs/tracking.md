@@ -126,6 +126,11 @@ unsynced; the units Vestigia assumes (metres, seconds) are on the
 The pipeline modules (filter, store, uploader, GPX writer) stay free of
 GTK so they run in tests with recorded fixes and recorded server answers.
 
+# Results on the phone
+
+None yet: the end-to-end walk (issue 17) is on the
+[owner checks](owner-checks.md).
+
 # Background operation on Phosh (open)
 
 The phone is only useful as a tracker if recording continues with the
