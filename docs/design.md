@@ -38,8 +38,19 @@ Why violet (chosen 2026-11-16 for the scaffold):
 
 | Screen | Narrow (≤ 600 sp) | Wide |
 |---|---|---|
-| Start (placeholder until M1) | `AdwStatusPage` with the app's symbolic icon, "Nothing Here Yet" | same |
-| Preferences | `AdwPreferencesDialog`, Appearance → Style | same |
+| Connect to Dawarich (no account) | `AdwPreferencesPage`: server address; log in with e-mail and password (pill "Log In", suggested) or paste the API key ("Use Key"); errors in an `AdwBanner`; scrolls for the on-screen keyboard, nothing focused when it opens | same, centred column |
+| Day (account saved) | OSM map filling the page with the day's tracks (accent line over a casing in the accent's text colour) and visits as markers, fitted to the day (again after a resize until the user moves the map); bottom bar within thumb reach: previous, the period button with a popover (Day / Week / Month as linked toggle buttons over a calendar that marks days with data), next (off when the period reaches today); header: title with the day as subtitle, menu; "Show My Location" as a round OSD button bottom right | same |
+| Day without data | `AdwStatusPage` "No Data on This Day" instead of the map; the bottom bar stays | same |
+| Day not loaded | `AdwStatusPage` "Server Unreachable" (no saved copy) or "Day Not Loaded" with the reason, both with Retry | same |
+| Key rejected (`401`) | Back to Connect to Dawarich with the banner "The server rejected the API key. Log in again."; the address stays, the key is removed | same |
+| Server too old | `AdwBanner` on the day page with the version found and the one needed | same |
+| Recording | Record button in the header (red while recording), `AdwBanner` with the tracker's status and Stop, today's own points as a live line in `--accent-color`; an empty today shows the map instead of "No Data" | same |
+| Day offline | The saved copy with an `AdwBanner` "Offline: showing the saved copy" and Retry | same |
+| Day Summary (sidebar of the day) | `AdwOverlaySplitView` sidebar with its own header: Summary (distance, time moving, places visited as property rows) and Visits (name, local times; tap centres the map). Below 600 sp it overlays the map, starts hidden and opens with the header's sidebar button; not a nested navigation split view (one navigation view per window) | beside the map, shown |
+| Visit (pushed from the sidebar) | Name (entry row with apply), time, status, "Show on Map"; Place: the server's suggestions as a choice list; pills "Confirm Visit" (suggested) and "Decline Visit" (destructive, at the end, away from the thumb). Every change has an Undo toast; a decline is sent only when its toast closes | same |
+| Statistics (pushed, main menu) | All-time totals; year chooser; distance per month as rows with the number (`numeric`) and a level bar in the accent colour (never colour alone); countries and cities of that year, or why there are none | same |
+| Two-Factor Code (pushed) | One entry row and "Verify" | same |
+| Preferences | `AdwPreferencesDialog`, page General: Account (e-mail, server, "Log Out" with Undo toast), Appearance → Style; page Tracking: Recording (mode, distance, interval, accuracy limit as spin rows), Upload (where to, automatic, batch size), Other Server (shown only for it: protocol, address, log-in method, user, token or password), In the Background (keep the phone awake while tracking, start at login), On This Phone (keep days, same settings on every device) | same |
 
 Every page is pushed onto one `AdwNavigationView`. The app icon (a
 trail of steps across a map to a place marker) and its symbolic variant
@@ -48,6 +59,7 @@ are drawn for Vestigia, AGPL like the app; no Dawarich logo.
 # Review checklist
 
 The toolkit's checklist, and for Vestigia: no horizontal scrolling at
-360 px, icon-only buttons (menu) have tooltips and labels.
+360 px, icon-only buttons (menu) have tooltips and labels, "Dawarich"
+only to say what the app connects to, never as the app's name.
 
 [^accents]: phosh-toolkit decision "One accent colour per app"

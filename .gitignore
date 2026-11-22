@@ -16,3 +16,5 @@ _build/
 .pytest_cache/
 # Shared package checked out by CI (tests.yml)
 /.phosh-toolkit/
+# GPX 1.1 schema, downloaded for the tests (no licence to redistribute it)
+tests/data/gpx/gpx.xsd

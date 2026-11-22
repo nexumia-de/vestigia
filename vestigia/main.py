@@ -6,7 +6,7 @@ import gi
 
 gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
-from gi.repository import Adw, Gdk, Gio, Gtk  # noqa: E402
+from gi.repository import Adw, Gdk, Gio, GLib, Gtk  # noqa: E402
 
 from vestigia import (APP_ID, NAME, NIGHTLY, REPO_URL,  # noqa: E402
                       SUPPORT_URL, VERSION_LABEL)
@@ -17,16 +17,30 @@ log = logging.getLogger("vestigia")
 class Application(Adw.Application):
     def __init__(self):
         super().__init__(application_id=APP_ID,
-                         flags=Gio.ApplicationFlags.DEFAULT_FLAGS)
+                         flags=Gio.ApplicationFlags.HANDLES_COMMAND_LINE)
+        self.add_main_option("background", 0, GLib.OptionFlags.NONE,
+                             GLib.OptionArg.NONE,
+                             "Start without a window and resume tracking", None)
         self.settings_store = None
+        self.account = None
+        self.tracker = None
+        # The day the window opens with (demo data: the recorded day).
+        self.first_day = None
         for name, callback in (("about", self._on_about),
                                ("preferences", self._on_preferences),
+                               ("show-summary", self._on_show_summary),
+                               ("toggle-tracking", self._on_toggle_tracking),
+                               ("stop-tracking", self._on_stop_tracking),
+                               ("export-gpx", self._on_export_gpx),
+                               ("statistics", self._on_statistics),
                                ("quit", self._on_quit)):
             action = Gio.SimpleAction.new(name, None)
             action.connect("activate", callback)
             self.add_action(action)
         self.set_accels_for_action("app.quit", ["<Control>q"])
         self.set_accels_for_action("app.preferences", ["<Control>comma"])
+        self.set_accels_for_action("app.show-summary", ["F9"])
+        self.set_accels_for_action("app.toggle-tracking", ["<Control>r"])
 
     def do_startup(self):
         Adw.Application.do_startup(self)
@@ -41,21 +55,74 @@ class Application(Adw.Application):
             Gtk.IconTheme.get_for_display(display).add_search_path(str(icons))
         from phosh_toolkit import style
 
-        from vestigia import settings
-        self.settings_store = settings.Store()
+        from vestigia import demo, secrets, settings
+        from vestigia.account import Account
+        if demo.enabled():
+            self.account, self.first_day = demo.account()
+            self.settings_store = self.account.settings_store
+        else:
+            self.settings_store = settings.Store()
+            self.account = Account(self.settings_store, secrets.Secrets())
         style.apply(self.settings_store.load().style)
+        from vestigia.tracker import config
+        from vestigia.tracking.service import Tracker
+        self.tracker = Tracker(self.account, config.Store())
+        from vestigia.tracking.background import Keeper
+        self.keeper = Keeper(self, self.tracker)
+
+    def do_command_line(self, command_line):
+        if command_line.get_options_dict().contains("background"):
+            # At login: no window; resume tracking if it was on.
+            self.resume_tracking(None)
+        else:
+            self.activate()
+        return 0
+
+    def resume_tracking(self, window):
+        if self.tracker.settings_store.load().tracking and not self.tracker.running:
+            self.tracker.start(window)
 
     def do_activate(self):
         from vestigia.window import Window
         window = self.props.active_window
         if window is None:
-            window = Window(self, self.settings_store)
+            window = Window(self, self.account, self.first_day, self.tracker)
             if NIGHTLY:
                 window.add_css_class("devel")
         window.present()
+        self.resume_tracking(window)
 
     def _window(self):
         return self.props.active_window
+
+    def _on_show_summary(self, *_):
+        """Toggle the day's sidebar (F9); an app action so screenshots
+        can open it."""
+        window = self._window()
+        page = getattr(window, "history", None)
+        if page is not None and window.nav.get_visible_page() is page:
+            page.split.set_show_sidebar(not page.split.get_show_sidebar())
+
+    def _on_toggle_tracking(self, *_):
+        """Start or stop tracking (Ctrl+R)."""
+        if self.tracker.running:
+            self.tracker.stop()
+        else:
+            self.tracker.start(self._window())
+
+    def _on_stop_tracking(self, *_):
+        """The notification's Stop button."""
+        self.tracker.stop()
+
+    def _on_statistics(self, *_):
+        window = self._window()
+        if window:
+            window.show_statistics()
+
+    def _on_export_gpx(self, *_):
+        window = self._window()
+        if window:
+            window.export_gpx()
 
     def _on_quit(self, *_):
         self.quit()

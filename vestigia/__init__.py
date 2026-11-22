@@ -12,5 +12,7 @@ NAME = "Travel Log (Nightly)" if NIGHTLY else "Travel Log"
 # About dialog, e.g. "0.1.0 (main · 8534d2c)" for a nightly build.
 VERSION_LABEL = f"{VERSION} ({BUILD_LABEL})" if BUILD_LABEL else VERSION
 REPO_URL = "https://github.com/nexumia-de/vestigia"
+# Sent with every request (OSM tile usage policy, Dawarich).
+USER_AGENT = f"Vestigia/{VERSION} (+{REPO_URL})"
 # Voluntary support for development (phosh-toolkit docs/support.md).
 SUPPORT_URL = "https://liberapay.com/suitably"
