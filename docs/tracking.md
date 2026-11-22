@@ -80,8 +80,17 @@ location portal ──fix──▶ filter ──point──▶ store (SQLite) �
      `GNetworkMonitor` reports the network back (`scheduler.py`).
    - A retry after a lost answer re-sends the batch: safe with
      Dawarich, which stores a re-sent batch once (recorded, issue 2).
-5. **Status in the UI**: tracking on/off, points waiting, last
-   successful upload, last error as an `AdwBanner`.
+5. **Service and status** (`vestigia/tracking/service.py`, owned by the
+   application): record button in the day page's header (Ctrl+R,
+   `app.toggle-tracking`; red while recording, tooltip and accessible
+   label "Start/Stop Tracking"), an `AdwBanner` while recording
+   ("Recording · 12 waiting · uploaded 10:14", or the upload or portal
+   error) with Stop. Uploads run when `batch_size` points wait, every 5
+   minutes, and when tracking stops (also with automatic upload off).
+   Today's points from the store are drawn live over the day in the
+   accent colour; the map follows them while the server has nothing for
+   today. Tracking that was on is remembered in `tracking.json` (resumed
+   in M3).
 6. **GPX export**: a day or range from the store as a GPX 1.1 file
    through the file chooser portal.
 

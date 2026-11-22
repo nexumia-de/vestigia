@@ -350,3 +350,51 @@ def test_tracking_preferences(app):
     run_until(lambda: any(r[0] == "PATCH" for r in account.http.requests), timeout=5)
     dialog.close()
     window.destroy()
+
+
+def test_record_button_and_live_track(app, monkeypatch, tmp_path):
+    from datetime import date, datetime
+
+    from gi.repository import GObject
+
+    from vestigia.tracker import config
+    from vestigia.tracker.fix import Fix
+    from vestigia.tracking import service
+    from vestigia.window import Window
+
+    class FakeSource(GObject.Object):
+        __gsignals__ = {"fix": (GObject.SignalFlags.RUN_FIRST, None, (object,)),
+                        "failed": (GObject.SignalFlags.RUN_FIRST, None, (str,))}
+        last = None
+
+        def __init__(self, *args):
+            super().__init__()
+            FakeSource.last = self
+
+        def start(self, window):
+            pass
+
+        def stop(self):
+            pass
+
+    monkeypatch.setattr(service, "Source", FakeSource)
+    account = new_account(configured=True)
+    store = config.Store()
+    store.save(config.TrackingSettings(target_kind=config.TARGET_NONE))
+    tracker = service.Tracker(account, store, tmp_path / "points.sqlite")
+    window = Window(app, account, tracker=tracker)
+    window.present()
+    page = window.nav.get_visible_page()
+    run_until(lambda: page.current is not None)
+    assert page.record_button.get_tooltip_text() == "Start Tracking"
+    page.record_button.set_active(True)
+    assert tracker.running and page.tracking_banner.get_revealed()
+    assert page.record_button.get_tooltip_text() == "Stop Tracking"
+    now = datetime.now().timestamp()
+    FakeSource.last.emit("fix", Fix(37.1685, -3.5962, 5, now - 120))
+    FakeSource.last.emit("fix", Fix(37.1700, -3.5900, 5, now - 60))
+    assert page.day == date.today() and len(page.map.live) == 2
+    assert page.states.state is None          # no longer "no data"
+    page.tracking_banner.emit("button-clicked")
+    assert not tracker.running and not page.record_button.get_active()
+    window.destroy()

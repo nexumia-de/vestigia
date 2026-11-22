@@ -20,11 +20,13 @@ class Application(Adw.Application):
                          flags=Gio.ApplicationFlags.DEFAULT_FLAGS)
         self.settings_store = None
         self.account = None
+        self.tracker = None
         # The day the window opens with (demo data: the recorded day).
         self.first_day = None
         for name, callback in (("about", self._on_about),
                                ("preferences", self._on_preferences),
                                ("show-summary", self._on_show_summary),
+                               ("toggle-tracking", self._on_toggle_tracking),
                                ("quit", self._on_quit)):
             action = Gio.SimpleAction.new(name, None)
             action.connect("activate", callback)
@@ -32,6 +34,7 @@ class Application(Adw.Application):
         self.set_accels_for_action("app.quit", ["<Control>q"])
         self.set_accels_for_action("app.preferences", ["<Control>comma"])
         self.set_accels_for_action("app.show-summary", ["F9"])
+        self.set_accels_for_action("app.toggle-tracking", ["<Control>r"])
 
     def do_startup(self):
         Adw.Application.do_startup(self)
@@ -55,12 +58,15 @@ class Application(Adw.Application):
             self.settings_store = settings.Store()
             self.account = Account(self.settings_store, secrets.Secrets())
         style.apply(self.settings_store.load().style)
+        from vestigia.tracker import config
+        from vestigia.tracking.service import Tracker
+        self.tracker = Tracker(self.account, config.Store())
 
     def do_activate(self):
         from vestigia.window import Window
         window = self.props.active_window
         if window is None:
-            window = Window(self, self.account, self.first_day)
+            window = Window(self, self.account, self.first_day, self.tracker)
             if NIGHTLY:
                 window.add_css_class("devel")
         window.present()
@@ -75,6 +81,13 @@ class Application(Adw.Application):
         page = getattr(window, "history", None)
         if page is not None and window.nav.get_visible_page() is page:
             page.split.set_show_sidebar(not page.split.get_show_sidebar())
+
+    def _on_toggle_tracking(self, *_):
+        """Start or stop tracking (Ctrl+R)."""
+        if self.tracker.running:
+            self.tracker.stop()
+        else:
+            self.tracker.start(self._window())
 
     def _on_quit(self, *_):
         self.quit()

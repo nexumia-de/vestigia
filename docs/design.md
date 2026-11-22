@@ -44,6 +44,7 @@ Why violet (chosen 2026-11-16 for the scaffold):
 | Day not loaded | `AdwStatusPage` "Server Unreachable" (no saved copy) or "Day Not Loaded" with the reason, both with Retry | same |
 | Key rejected (`401`) | Back to Connect to Dawarich with the banner "The server rejected the API key. Log in again."; the address stays, the key is removed | same |
 | Server too old | `AdwBanner` on the day page with the version found and the one needed | same |
+| Recording | Record button in the header (red while recording), `AdwBanner` with the tracker's status and Stop, today's own points as a live line in `--accent-color`; an empty today shows the map instead of "No Data" | same |
 | Day offline | The saved copy with an `AdwBanner` "Offline: showing the saved copy" and Retry | same |
 | Day Summary (sidebar of the day) | `AdwOverlaySplitView` sidebar with its own header: Summary (distance, time moving, places visited as property rows) and Visits (name, local times; tap centres the map). Below 600 sp it overlays the map, starts hidden and opens with the header's sidebar button; not a nested navigation split view (one navigation view per window) | beside the map, shown |
 | Two-Factor Code (pushed) | One entry row and "Verify" | same |

@@ -4,7 +4,7 @@ the date picker sit in a bottom bar within thumb reach (phosh-toolkit
 adaptive rule 10); the header keeps title, sidebar toggle and menu. One
 navigation view per window, so the sidebar is an AdwOverlaySplitView,
 not a nested navigation split view (rule 9)."""
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 
 from gi.repository import Adw, GLib, GObject, Gtk
 from phosh_toolkit import tasks, widgets
@@ -14,6 +14,7 @@ from vestigia.day import cache, model
 from vestigia.day.sidebar import Sidebar
 from vestigia.day.states import StateStack
 from vestigia.map.view import MapView
+from vestigia.tracking import status
 
 
 def day_label(day):
@@ -43,12 +44,20 @@ class DayPage(Adw.NavigationPage):
         self.sidebar_button.update_property([Gtk.AccessibleProperty.LABEL],
                                             ["Day Summary"])
         header.pack_start(self.sidebar_button)
+        self.record_button = Gtk.ToggleButton(icon_name="media-record-symbolic")
+        self.record_button.connect("toggled", self._on_record)
+        header.pack_end(self.record_button)
         self.header = header
         self.toolbar.add_top_bar(header)
         # A saved copy is shown because the server cannot be reached.
         self.offline_banner = Adw.Banner(button_label="Retry")
         self.offline_banner.connect("button-clicked", lambda *_: self.load())
         self.toolbar.add_top_bar(self.offline_banner)
+        # What the tracker does, with Stop, while it records.
+        self.tracking_banner = Adw.Banner(button_label="Stop")
+        self.tracking_banner.connect("button-clicked",
+                                     lambda *_: window.tracker.stop())
+        self.toolbar.add_top_bar(self.tracking_banner)
         # A server problem that stays (too old for Travel Log).
         self.server_banner = Adw.Banner()
         self.toolbar.add_top_bar(self.server_banner)
@@ -85,6 +94,11 @@ class DayPage(Adw.NavigationPage):
         breakpoint.add_setter(self.split, "show-sidebar", False)
         self.bin.add_breakpoint(breakpoint)
         self.set_child(self.bin)
+        tracker = window.tracker
+        self._handlers = [tracker.connect("changed", self._on_tracker),
+                          tracker.connect("point", self._on_point)]
+        self.connect("destroy", self._disconnect)
+        self._on_tracker(tracker)
         self.connect("shown", lambda *_: self._fit())
         self.load()
 
@@ -183,7 +197,58 @@ class DayPage(Adw.NavigationPage):
                                    else f"on {when}")
         else:
             self.states.show_content()
+        self._show_live()
         self._fit()
+
+    def _disconnect(self, *_):
+        for handler in self._handlers:
+            self.window.tracker.disconnect(handler)
+        self._handlers = []
+
+    def _on_record(self, button):
+        tracker = self.window.tracker
+        if button.get_active() and not tracker.running:
+            tracker.start(self.window)
+        elif not button.get_active() and tracker.running:
+            tracker.stop()
+
+    def _on_tracker(self, tracker):
+        running = tracker.running
+        label = "Stop Tracking" if running else "Start Tracking"
+        self.record_button.set_tooltip_text(label)
+        self.record_button.update_property([Gtk.AccessibleProperty.LABEL], [label])
+        if self.record_button.get_active() != running:
+            self.record_button.set_active(running)
+        if running:
+            self.record_button.add_css_class("vestigia-recording")
+        else:
+            self.record_button.remove_css_class("vestigia-recording")
+        line = status.text(tracker)
+        self.tracking_banner.set_title(line)
+        self.tracking_banner.set_button_label("Stop" if running else None)
+        self.tracking_banner.set_revealed(bool(line) and (running or bool(tracker.error)))
+        if self.current is not None:
+            self._show_live()
+
+    def _on_point(self, tracker, fix):
+        if self.day == date.today():
+            self._show_live()
+
+    def _show_live(self):
+        if self.day != date.today():
+            self.map.set_live([])
+            return
+        start = datetime.combine(self.day, datetime.min.time()).timestamp()
+        live = self.window.tracker.today(start, start + 86400)
+        self.map.set_live(live)
+        if live and self.current is not None and self.current.empty and \
+                not self.map._touched:
+            # Nothing from the server yet: follow what this phone records.
+            self.map.show(live)
+        if self.states.state == "empty" and (self.map.live or
+                                             self.window.tracker.running):
+            # Recording today: the map, where the live track will grow.
+            self.states.show_content()
 
     def _on_visit(self, sidebar, visit):
         if self.split.get_collapsed():

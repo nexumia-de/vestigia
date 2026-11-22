@@ -6,7 +6,7 @@ from vestigia import NAME
 
 
 class Window(Adw.ApplicationWindow):
-    def __init__(self, app, account, day=None):
+    def __init__(self, app, account, day=None, tracker=None):
         super().__init__(application=app, default_width=1000,
                          default_height=700, title=NAME)
         # Breakpoints need a minimum size (phosh-toolkit adaptive rules).
@@ -14,8 +14,12 @@ class Window(Adw.ApplicationWindow):
         self.account = account
         self.settings_store = account.settings_store
         self.settings = self.settings_store.load()
-        from vestigia.tracker import config
-        self.tracking_store = config.Store()
+        if tracker is None:
+            from vestigia.tracker import config
+            from vestigia.tracking.service import Tracker
+            tracker = Tracker(account, config.Store())
+        self.tracker = tracker
+        self.tracking_store = tracker.settings_store
         self.nav = Adw.NavigationView(vexpand=True)
         # The keyring is locked or missing: the key lives only in memory.
         self.keyring_banner = Adw.Banner(
@@ -103,9 +107,7 @@ class Window(Adw.ApplicationWindow):
     def tracking_settings_changed(self):
         """The tracking settings were edited; a running tracker takes
         them over."""
-        tracker = getattr(self, "tracker", None)
-        if tracker is not None:
-            tracker.reload()
+        self.tracker.reload()
 
     def toast(self, title):
         self.toasts.add_toast(Adw.Toast(title=title))
