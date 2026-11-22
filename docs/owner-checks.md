@@ -82,6 +82,13 @@ measurements. On the phone, with the nightly:
 - [ ] Turn "Start at Login" on: does Phosh show the Background portal's
   dialog? After a reboot, does tracking resume without opening the app?
 
+## Month view on the phone (issue 24)
+
+- [ ] Open a busy month in the Month view on the phone; if loading or
+  panning takes more than a few seconds, note it in the
+  [range decision](decisions/range-view.md) and consider the vector
+  tiles described there.
+
 ## Toolkit follow-ups (issues 5, 7, 12 and 19)
 
 - [ ] phosh-toolkit (finding of issue 7, possibly the cause of the

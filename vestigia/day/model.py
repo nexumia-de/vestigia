@@ -18,6 +18,7 @@ class Visit:
 
 @dataclass
 class Day:
+    """A day, or a range of days from `day` to `end` (inclusive)."""
     day: date
     # Lists of (lat, lon), one per track (or one for the raw points).
     tracks: list = field(default_factory=list)
@@ -27,6 +28,8 @@ class Day:
     visits: list = field(default_factory=list)
     # (south, west, north, east) or None.
     bounds: tuple = None
+    # Last day of a range; None for a single day.
+    end: date = None
 
     @property
     def empty(self):
@@ -70,45 +73,77 @@ def track_from_points(points):
             if p.get("latitude") is not None and p.get("longitude") is not None]
 
 
-def from_timeline(days, day):
-    """(summary, visits, bounds) of `day` in a timeline answer."""
-    for entry in days or []:
-        if entry.get("date") != day.isoformat():
+def _visits(entry):
+    visits = []
+    for item in entry.get("entries") or []:
+        if item.get("type") != "visit":
             continue
-        visits = []
-        for item in entry.get("entries") or []:
-            if item.get("type") != "visit":
-                continue
-            place = item.get("place") or {}
-            if place.get("lat") is None or place.get("lng") is None:
-                continue
-            visits.append(Visit(
-                name=item.get("name") or place.get("name") or "Visit",
-                status=item.get("status") or "", visit_id=item.get("visit_id") or 0,
-                place_id=item.get("place_id") or 0,
-                started_at=item.get("started_at") or "",
-                ended_at=item.get("ended_at") or "",
-                lat=float(place["lat"]), lon=float(place["lng"])))
+        place = item.get("place") or {}
+        if place.get("lat") is None or place.get("lng") is None:
+            continue
+        visits.append(Visit(
+            name=item.get("name") or place.get("name") or "Visit",
+            status=item.get("status") or "", visit_id=item.get("visit_id") or 0,
+            place_id=item.get("place_id") or 0,
+            started_at=item.get("started_at") or "",
+            ended_at=item.get("ended_at") or "",
+            lat=float(place["lat"]), lon=float(place["lng"])))
+    return visits
+
+
+def _union(a, b):
+    if a is None:
+        return b
+    if b is None:
+        return a
+    return (min(a[0], b[0]), min(a[1], b[1]), max(a[2], b[2]), max(a[3], b[3]))
+
+
+SUMMED = ("total_distance", "time_moving_minutes", "time_stationary_minutes",
+          "places_visited", "suggested_count", "confirmed_count", "declined_count")
+
+
+def from_timeline(days, day, end=None):
+    """(summary, visits, bounds) of `day`, or of all days from `day` to
+    `end`, in a timeline answer; numbers of a range are summed."""
+    end = end or day
+    summary, visits, bounds = {}, [], None
+    for entry in days or []:
+        try:
+            when = date.fromisoformat(entry.get("date") or "")
+        except ValueError:
+            continue
+        if not day <= when <= end:
+            continue
+        s = entry.get("summary") or {}
+        for key in SUMMED:
+            if isinstance(s.get(key), (int, float)):
+                summary[key] = round(summary.get(key, 0) + s[key], 1)
+        if s.get("distance_unit"):
+            summary["distance_unit"] = s["distance_unit"]
+        visits += _visits(entry)
         b = entry.get("bounds") or {}
-        bounds = None
         if all(b.get(k) is not None for k in ("sw_lat", "sw_lng", "ne_lat", "ne_lng")):
-            bounds = (b["sw_lat"], b["sw_lng"], b["ne_lat"], b["ne_lng"])
-        return entry.get("summary") or {}, visits, bounds
-    return {}, [], None
+            bounds = _union(bounds, (b["sw_lat"], b["sw_lng"], b["ne_lat"], b["ne_lng"]))
+    return summary, visits, bounds
 
 
-def load(client, day):
-    """The Day from the server, blocking (worker thread). Falls back to
-    raw points when the server has not computed tracks yet
-    (docs/dawarich-api.md, "Tracks")."""
-    start, end = day_range(day)
-    result = Day(day=day)
-    result.tracks = tracks_from_features(client.tracks(start, end))
-    if not result.tracks:
-        track = track_from_points(client.points(start, end))
+def load(client, day, end=None):
+    """The Day (or range up to `end`) from the server, blocking (worker
+    thread). A single day falls back to raw points when the server has
+    not computed tracks yet (docs/dawarich-api.md, "Tracks"); a range
+    does not, it could be tens of thousands
+    (docs/decisions/range-view.md)."""
+    end = end if end and end != day else None
+    start, _ = day_range(day)
+    _, stop = day_range(end or day)
+    result = Day(day=day, end=end)
+    result.tracks = tracks_from_features(client.tracks(start, stop))
+    if not result.tracks and end is None:
+        track = track_from_points(client.points(start, stop))
         if len(track) >= 2:
             result.tracks = [track]
             result.from_points = True
     result.summary, result.visits, result.bounds = from_timeline(
-        client.timeline(start, end), day)
+        client.timeline(start, stop), day, end)
     return result

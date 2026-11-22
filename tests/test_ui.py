@@ -488,3 +488,32 @@ def test_statistics_page(app):
     assert page.month_rows[3].value.get_label() == "2 km"
     run_until(lambda: "reverse geocoding" in page.places.get_description())
     window.destroy()
+
+
+def test_week_month_and_calendar_marks(app):
+    from datetime import date
+
+    from vestigia.window import Window
+    window = Window(app, new_account(configured=True))
+    window.present()
+    page = window.history
+    day = date.fromisoformat(recorded.DAY)
+    page.go(day)
+    run_until(lambda: page.current and page.current.day == day)
+    page.bar.span_buttons["week"].set_active(True)
+    run_until(lambda: page.current.end == date(2024, 4, 21))
+    assert page.date_button.get_label() == "15 – 21 Apr 2024"
+    assert page.prev_button.get_tooltip_text() == "Previous Week"
+    assert len(page.map.tracks) == 4
+    page.bar.span_buttons["month"].set_active(True)
+    run_until(lambda: page.current.end == date(2024, 4, 30))
+    page.prev_button.emit("clicked")
+    run_until(lambda: page.current.day == date(2024, 3, 1))
+    assert page.states.state == "empty"
+    assert "No Data in This Period" == page.states.status.get_title()
+    # Calendar marks: April 2024 has data on the 21st.
+    page.bar.calendar.select_day(GLib.DateTime.new_local(2024, 4, 21, 0, 0, 0))
+    page.bar._month_shown()
+    run_until(lambda: page.bar.calendar.get_day_is_marked(21))
+    assert not page.bar.calendar.get_day_is_marked(20)
+    window.destroy()

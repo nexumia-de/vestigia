@@ -243,8 +243,8 @@ recordings in `tests/data/dawarich/<name>.json`) against
    ranges; to be compared with the official app by the owner
    ([owner checks](owner-checks.md)).
 5. ~~Why no tracks?~~ 6-hour look-back of the real-time job, see above.
-6. MVT tiles accept the Bearer header (2026-11-22); whether libshumate
-   should draw them is decided with the range view (M4).
+6. MVT tiles accept the Bearer header (2026-11-22); not used for now
+   ([range view](decisions/range-view.md)).
 7. ~~Oldest supported version~~: 1.18.1, the version the answers were
    recorded from ([decision](decisions/minimum-server-version.md)).
 

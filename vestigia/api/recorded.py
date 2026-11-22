@@ -28,8 +28,12 @@ class RecordedHttp:
         return json.loads((self.data / f"{name}.json").read_text(encoding="utf-8"))
 
     def choose(self, method, path, query, body):
-        """The recording that answers a request, or None."""
-        day = query.get("start_at", "")[:10]
+        """The recording that answers a request, or None. A range that
+        contains the recorded day gets that day's answer: the server
+        has no other data, so it would answer the same."""
+        start = query.get("start_at", "")[:10]
+        stop = query.get("end_at", "")[:10] or start
+        day = DAY if start and start <= DAY <= stop else start
         if (method, path) == ("POST", "/api/v1/auth/login"):
             if body.get("password") != PASSWORD:
                 return "auth_login_wrong_password"

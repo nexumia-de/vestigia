@@ -10,20 +10,13 @@ from gi.repository import Adw, GLib, GObject, Gtk
 from phosh_toolkit import tasks, widgets
 
 from vestigia import NAME
-from vestigia.day import cache, model
+from vestigia.day import cache, marks, model
+from vestigia.day import period as periods
+from vestigia.day.day_bar import DayBar
 from vestigia.day.sidebar import Sidebar
 from vestigia.day.states import StateStack
 from vestigia.map.view import MapView
 from vestigia.tracking import status
-
-
-def day_label(day):
-    today = date.today()
-    if day == today:
-        return "Today"
-    if day == today - timedelta(days=1):
-        return "Yesterday"
-    return day.strftime("%a, %-d %b %Y")
 
 
 class DayPage(Adw.NavigationPage):
@@ -31,7 +24,10 @@ class DayPage(Adw.NavigationPage):
         super().__init__(title=NAME, tag="history")
         self.window = window
         self.day = day or date.today()
+        self.span = periods.DAY
         self.current = None
+        # Months with data (/api/v1/points/tracked_months), once.
+        self._tracked = None
         self._loading = 0
 
         self.toolbar = Adw.ToolbarView()
@@ -73,7 +69,16 @@ class DayPage(Adw.NavigationPage):
         self.states = StateStack(self.overlay)
         self.states.connect("retry", lambda *_: self.load())
         self.toolbar.set_content(self.states)
-        self.toolbar.add_bottom_bar(self._day_bar())
+        self.bar = DayBar()
+        self.bar.connect("step", lambda _b, n: self.go(periods.step(self.period(), n).start))
+        self.bar.connect("picked", lambda _b, day: self.go(day))
+        self.bar.connect("span", self._on_span)
+        self.bar.connect("month-shown", self._on_month_shown)
+        self.toolbar.add_bottom_bar(self.bar)
+        # Tests and older callers reach the bar's widgets through the page.
+        self.prev_button = self.bar.prev_button
+        self.next_button = self.bar.next_button
+        self.date_button = self.bar.date_button
 
         self.sidebar = Sidebar()
         self.sidebar.connect("visit-activated", self._on_visit)
@@ -102,67 +107,50 @@ class DayPage(Adw.NavigationPage):
         self.connect("shown", lambda *_: self._fit())
         self.load()
 
-    def _day_bar(self):
-        bar = Gtk.CenterBox(margin_start=6, margin_end=6, margin_top=6,
-                            margin_bottom=6)
-        self.prev_button = self._icon_button("go-previous-symbolic",
-                                             "Previous Day", -1)
-        self.next_button = self._icon_button("go-next-symbolic", "Next Day", 1)
-        self.calendar = Gtk.Calendar()
-        self.calendar.connect("day-selected", self._on_calendar)
-        popover = Gtk.Popover(child=self.calendar)
-        self.date_button = Gtk.MenuButton(popover=popover,
-                                          tooltip_text="Choose a Day")
-        self.date_button.add_css_class("flat")
-        bar.set_start_widget(self.prev_button)
-        bar.set_center_widget(self.date_button)
-        bar.set_end_widget(self.next_button)
-        return bar
+    def period(self):
+        return periods.of(self.day, self.span)
 
-    def _icon_button(self, icon, label, step):
-        button = Gtk.Button(icon_name=icon, tooltip_text=label)
-        button.update_property([Gtk.AccessibleProperty.LABEL], [label])
-        button.set_size_request(48, 48)
-        button.add_css_class("flat")
-        button.connect("clicked", lambda *_: self.go(self.day + timedelta(days=step)))
-        return button
+    def _on_span(self, bar, span):
+        self.span = span
+        self.load()
 
-    def _on_calendar(self, calendar):
-        value = calendar.get_date()
-        picked = date(value.get_year(), value.get_month(), value.get_day_of_month())
-        self.date_button.get_popover().popdown()
-        if picked != self.day:
-            self.go(picked)
+    def _on_month_shown(self, bar, year, month):
+        """Mark the days with data of the month the calendar shows."""
+        def done(result, error):
+            if error is None:
+                self._tracked, days = result
+                self.bar.mark(year, month, days)
+
+        tasks.run(marks.days_with_data, done, self.window.account.client(),
+                  self._tracked, year, month)
 
     def go(self, day):
         self.day = day
         self.load()
 
     def load(self):
-        """Fetch the day in a worker; late answers for another day are
-        dropped."""
-        day = self.day
-        self.date_button.set_label(day_label(day))
-        self.title.set_subtitle(day_label(day))
-        self.next_button.set_sensitive(day < date.today())
-        self.calendar.select_day(GLib.DateTime.new_local(day.year, day.month,
-                                                         day.day, 0, 0, 0))
+        """Fetch the period in a worker; late answers for another period
+        are dropped. Single days come from the cache when they can."""
+        period = self.period()
+        text = self.bar.show_period(period)
+        self.title.set_subtitle(text)
         server = self.window.account.server_url
-        saved = cache.load(server, day)
+        saved = cache.load(server, period.start) if period.single_day else None
         if saved is not None:
             self.show_day(saved)
-            if cache.final(day):
+            if cache.final(period.start):
                 self.offline_banner.set_revealed(False)
                 return
         self._loading += 1
         self.spinner.set_visible(True)
         client = self.window.account.client()
         tasks.run(model.load, lambda result, error: self._loaded(
-            day, server, saved, result, error), client, day)
+            period, server, saved, result, error), client, period.start,
+            None if period.single_day else period.end)
 
-    def _loaded(self, day, server, saved, result, error):
+    def _loaded(self, period, server, saved, result, error):
         self._loading -= 1
-        if day != self.day:
+        if period != self.period():
             return
         self.spinner.set_visible(False)
         if error is not None:
@@ -173,13 +161,14 @@ class DayPage(Adw.NavigationPage):
                 self.offline_banner.set_revealed(True)
             elif saved is None:
                 self.map.clear()
-                self.sidebar.show_day(model.Day(day=day))
+                self.sidebar.show_day(model.Day(day=period.start))
                 self.states.show_error(error)
             else:
                 self.show_error(error)
             return
         self.offline_banner.set_revealed(False)
-        cache.save(server, result)
+        if period.single_day:
+            cache.save(server, result)
         self.show_day(result)
 
     def show_day(self, result):
@@ -192,9 +181,14 @@ class DayPage(Adw.NavigationPage):
                                 visit.name)
         self.sidebar.show_day(result)
         if result.empty:
-            when = day_label(result.day)
-            self.states.show_empty(when.lower() if when in ("Today", "Yesterday")
-                                   else f"on {when}")
+            period = periods.Period(result.day, result.end or result.day,
+                                    self.span if result.end else periods.DAY)
+            when = periods.label(period)
+            if period.span == periods.DAY:
+                when = when.lower() if when in ("Today", "Yesterday") else f"on {when}"
+            else:
+                when = f"in {when}"
+            self.states.show_empty(when)
         else:
             self.states.show_content()
         self._show_live()
@@ -231,11 +225,11 @@ class DayPage(Adw.NavigationPage):
             self._show_live()
 
     def _on_point(self, tracker, fix):
-        if self.day == date.today():
+        if self.span == periods.DAY and self.day == date.today():
             self._show_live()
 
     def _show_live(self):
-        if self.day != date.today():
+        if self.span != periods.DAY or self.day != date.today():
             self.map.set_live([])
             return
         start = datetime.combine(self.day, datetime.min.time()).timestamp()
