@@ -59,6 +59,9 @@ python.install_sources(
   'vestigia/tracking/settings_page.py',
   'vestigia/tracking/status.py',
   'vestigia/tracking/sync.py',
+  'vestigia/visits/__init__.py',
+  'vestigia/visits/actions.py',
+  'vestigia/visits/page.py',
   'vestigia/window.py',
   preserve_path: true,
 )

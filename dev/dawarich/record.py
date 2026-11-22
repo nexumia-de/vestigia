@@ -232,6 +232,15 @@ def main():
                                   body={"visit": {"name": "Morning stop"}}))
         save("visit_confirm", call("PATCH", f"/api/v1/visits/{visit_id}", key,
                                    body={"visit": {"status": "confirmed"}}))
+        save("visit_unconfirm", call("PATCH", f"/api/v1/visits/{visit_id}", key,
+                                     body={"visit": {"status": "suggested"}}),
+             note="undo of a confirmation")
+        places = save("visit_possible_places_again", call(
+            "GET", f"/api/v1/visits/{visit_id}/possible_places", key))["body"] or []
+        if places:
+            save("visit_choose_place", call(
+                "PATCH", f"/api/v1/visits/{visit_id}", key,
+                body={"visit": {"place_id": places[0]["id"], "status": "confirmed"}}))
         save("timeline_with_visit", call("GET", "/api/v1/timeline", key,
                                          {"start_at": DAY[0], "end_at": DAY[1]}))
         save("visit_decline", call("PATCH", f"/api/v1/visits/{visit_id}", key,

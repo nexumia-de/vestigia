@@ -152,3 +152,19 @@ class Dawarich:
         answer = self.json("PATCH", "/api/v1/settings/mobile",
                            body={"settings": values}) or {}
         return answer.get("settings") or {}
+
+    # Visits
+
+    def visits(self, start, end):
+        return self.json("GET", "/api/v1/visits",
+                         {"start_at": start, "end_at": end}) or []
+
+    def possible_places(self, visit_id):
+        return self.json("GET", f"/api/v1/visits/{int(visit_id)}/possible_places") or []
+
+    def update_visit(self, visit_id, **fields):
+        """PATCH name, status ("suggested", "confirmed", "declined") or
+        place_id. Dawarich confirms a suggested visit on any edit unless
+        a status is sent (docs/dawarich-api.md)."""
+        return self.json("PATCH", f"/api/v1/visits/{int(visit_id)}",
+                         body={"visit": fields}) or {}

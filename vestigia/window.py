@@ -120,5 +120,17 @@ class Window(Adw.ApplicationWindow):
     def toast(self, title):
         self.toasts.add_toast(Adw.Toast(title=title))
 
+    def toast_with_undo(self, title, undo=None, on_dismissed=None):
+        """A toast; with `undo`, an Undo button. `on_dismissed` runs when
+        it closes, whether or not Undo was pressed."""
+        toast = Adw.Toast(title=title)
+        if undo is not None:
+            toast.set_button_label("Undo")
+            toast.connect("button-clicked", lambda *_: undo())
+        if on_dismissed is not None:
+            toast.connect("dismissed", lambda *_: on_dismissed())
+        self.toasts.add_toast(toast)
+        return toast
+
     def save_settings(self):
         self.settings_store.save(self.settings)

@@ -13,6 +13,7 @@ class Visit:
     lat: float
     lon: float
     visit_id: int = 0
+    place_id: int = 0
 
 
 @dataclass
@@ -84,6 +85,7 @@ def from_timeline(days, day):
             visits.append(Visit(
                 name=item.get("name") or place.get("name") or "Visit",
                 status=item.get("status") or "", visit_id=item.get("visit_id") or 0,
+                place_id=item.get("place_id") or 0,
                 started_at=item.get("started_at") or "",
                 ended_at=item.get("ended_at") or "",
                 lat=float(place["lat"]), lon=float(place["lng"])))

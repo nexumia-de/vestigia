@@ -251,9 +251,22 @@ class DayPage(Adw.NavigationPage):
             self.states.show_content()
 
     def _on_visit(self, sidebar, visit):
+        from vestigia.visits.page import VisitPage
         if self.split.get_collapsed():
             self.split.set_show_sidebar(False)
+        self.window.nav.push(VisitPage(self.window, self, visit))
+
+    def center_on_visit(self, visit):
         self.map.center(visit.lat, visit.lon, max(self.map.viewport.get_zoom_level(), 16))
+
+    def hide_visit(self, visit):
+        """Leave a declined visit out until the server confirms it."""
+        import dataclasses
+        shown = dataclasses.replace(self.current, visits=[
+            v for v in self.current.visits if v.visit_id != visit.visit_id])
+        current = self.current
+        self.show_day(shown)
+        self.current = current
 
     def show_error(self, error):
         from vestigia.account.errors import describe

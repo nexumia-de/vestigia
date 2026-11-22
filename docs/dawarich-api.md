@@ -214,7 +214,12 @@ recordings in `tests/data/dawarich/<name>.json`) against
   after `declined` the visit **disappears**: it is no longer listed and
   a further `PATCH` answers `404` (`visit_decline`,
   `visits_after_decline`, `visit_suggest_again`). Declining cannot be
-  undone through the API, so the app asks before declining.
+  undone through the API, so the app sends it only after its Undo toast
+  closed. A confirmation can be undone with `status: suggested`
+  (`visit_unconfirm`); `place_id` from `possible_places` sets the place
+  (`visit_choose_place`). An edit of a suggested visit (name, place)
+  also confirms it unless the request sends a status
+  (`Api::V1::VisitsController#update_visit`, 1.18.1 source).
 - `GET /api/v1/stats`, `/api/v1/points/tracked_months` (`[{"year":
   2024, "months": ["Apr"]}]`), `/api/v1/countries/visited` and
   `/visited_cities` answer as recorded; countries and cities stay empty

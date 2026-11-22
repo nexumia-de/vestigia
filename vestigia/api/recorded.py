@@ -67,9 +67,12 @@ class RecordedHttp:
         if path.endswith("/possible_places"):
             return "visit_possible_places"
         if method == "PATCH":
-            status = (body.get("visit") or {}).get("status")
+            visit = body.get("visit") or {}
+            if "place_id" in visit:
+                return "visit_choose_place"
             return {"confirmed": "visit_confirm", "declined": "visit_decline",
-                    None: "visit_rename"}.get(status)
+                    "suggested": "visit_unconfirm",
+                    None: "visit_rename"}.get(visit.get("status"))
         return None
 
     def request(self, method, url, headers=None, body=None,
