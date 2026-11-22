@@ -224,6 +224,10 @@ recordings in `tests/data/dawarich/<name>.json`) against
   2024, "months": ["Apr"]}]`), `/api/v1/countries/visited` and
   `/visited_cities` answer as recorded; countries and cities stay empty
   without reverse geocoding (`STORE_GEODATA=false` on the dev server).
+  Their non-empty shape (`{"countries": [{"iso_a3", "name"}]}`,
+  `{"data": [{"country", "cities": [{"city", "points", "timestamp",
+  "stayed_for"}]}]}`) comes from the OpenAPI examples[^swagger], kept
+  as **documented, not recorded** fixtures in `tests/data/documented/`.
 
 # Open questions
 

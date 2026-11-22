@@ -474,3 +474,17 @@ def test_visit_rename_keeps_status(app):
     run_until(lambda: patches(account))
     assert patches(account) == [{"name": "Café", "status": "confirmed"}]
     window.destroy()
+
+
+def test_statistics_page(app):
+    from vestigia.window import Window
+    window = Window(app, new_account(configured=True))
+    window.present()
+    window.show_statistics()
+    page = window.nav.get_visible_page()
+    assert page.get_tag() == "statistics"
+    run_until(lambda: page.month_rows)
+    assert page.total_rows["points"].value.get_label() == "43"
+    assert page.month_rows[3].value.get_label() == "2 km"
+    run_until(lambda: "reverse geocoding" in page.places.get_description())
+    window.destroy()

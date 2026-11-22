@@ -1,6 +1,7 @@
 # Directory Update Log
 
 ## 2026-11-22
+* **Update**: Statistics (#23): main menu → Statistics (`vestigia/stats/`): totals and distance per month from `/api/v1/stats`, countries and cities per year. Non-empty country and city answers come from the OpenAPI examples as documented fixtures (`tests/data/documented/`), because the dev server has no reverse geocoding.
 * **Update**: Visits (#22): a visit page pushed from the sidebar (`vestigia/visits/`) renames, confirms, declines and chooses a place from `possible_places`, each with an Undo toast; a decline is held back until its toast closes because the server cannot undo it. Recordings extended (undo of a confirmation, choosing a place). Suggested visits are marked in the sidebar.
 * **Update**: Gaps and battery with the screen off (#21): the measurement needs the phone; steps and where to write the numbers are in the [owner checks](owner-checks.md) ("Background tracking on the phone").
 * **Update**: Tracking indicator (#20): a notification with the status line and Stop while tracking (`app.stop-tracking`), sent again only when its text changes, withdrawn on stop.

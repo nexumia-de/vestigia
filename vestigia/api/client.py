@@ -168,3 +168,19 @@ class Dawarich:
         a status is sent (docs/dawarich-api.md)."""
         return self.json("PATCH", f"/api/v1/visits/{int(visit_id)}",
                          body={"visit": fields}) or {}
+
+    # Statistics
+
+    def stats(self):
+        return self.json("GET", "/api/v1/stats") or {}
+
+    def countries(self, start, end):
+        return self.json("GET", "/api/v1/countries/visited",
+                         {"start_at": start, "end_at": end}) or {}
+
+    def cities(self, start, end):
+        return self.json("GET", "/api/v1/countries/visited_cities",
+                         {"start_at": start, "end_at": end}) or {}
+
+    def tracked_months(self):
+        return self.json("GET", "/api/v1/points/tracked_months") or []
