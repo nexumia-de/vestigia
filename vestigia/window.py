@@ -6,7 +6,7 @@ from vestigia import NAME
 
 
 class Window(Adw.ApplicationWindow):
-    def __init__(self, app, account):
+    def __init__(self, app, account, day=None):
         super().__init__(application=app, default_width=1000,
                          default_height=700, title=NAME)
         # Breakpoints need a minimum size (phosh-toolkit adaptive rules).
@@ -24,8 +24,9 @@ class Window(Adw.ApplicationWindow):
         box.append(self.nav)
         self.toasts = Adw.ToastOverlay(child=box)
         self.set_content(self.toasts)
+        self.history = None
         if account.configured:
-            self.show_history()
+            self.show_history(day)
         else:
             self.show_setup()
 

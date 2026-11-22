@@ -33,6 +33,7 @@ python.install_sources(
   'vestigia/map/__init__.py',
   'vestigia/map/fit.py',
   'vestigia/map/view.py',
+  'vestigia/demo.py',
   'vestigia/main.py',
   'vestigia/preferences.py',
   'vestigia/settings.py',

@@ -20,14 +20,18 @@ class Application(Adw.Application):
                          flags=Gio.ApplicationFlags.DEFAULT_FLAGS)
         self.settings_store = None
         self.account = None
+        # The day the window opens with (demo data: the recorded day).
+        self.first_day = None
         for name, callback in (("about", self._on_about),
                                ("preferences", self._on_preferences),
+                               ("show-summary", self._on_show_summary),
                                ("quit", self._on_quit)):
             action = Gio.SimpleAction.new(name, None)
             action.connect("activate", callback)
             self.add_action(action)
         self.set_accels_for_action("app.quit", ["<Control>q"])
         self.set_accels_for_action("app.preferences", ["<Control>comma"])
+        self.set_accels_for_action("app.show-summary", ["F9"])
 
     def do_startup(self):
         Adw.Application.do_startup(self)
@@ -42,23 +46,35 @@ class Application(Adw.Application):
             Gtk.IconTheme.get_for_display(display).add_search_path(str(icons))
         from phosh_toolkit import style
 
-        from vestigia import secrets, settings
+        from vestigia import demo, secrets, settings
         from vestigia.account import Account
-        self.settings_store = settings.Store()
-        self.account = Account(self.settings_store, secrets.Secrets())
+        if demo.enabled():
+            self.account, self.first_day = demo.account()
+            self.settings_store = self.account.settings_store
+        else:
+            self.settings_store = settings.Store()
+            self.account = Account(self.settings_store, secrets.Secrets())
         style.apply(self.settings_store.load().style)
 
     def do_activate(self):
         from vestigia.window import Window
         window = self.props.active_window
         if window is None:
-            window = Window(self, self.account)
+            window = Window(self, self.account, self.first_day)
             if NIGHTLY:
                 window.add_css_class("devel")
         window.present()
 
     def _window(self):
         return self.props.active_window
+
+    def _on_show_summary(self, *_):
+        """Toggle the day's sidebar (F9); an app action so screenshots
+        can open it."""
+        window = self._window()
+        page = getattr(window, "history", None)
+        if page is not None and window.nav.get_visible_page() is page:
+            page.split.set_show_sidebar(not page.split.get_show_sidebar())
 
     def _on_quit(self, *_):
         self.quit()

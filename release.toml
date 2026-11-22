@@ -3,5 +3,19 @@
 metainfo = "data/de.nexumia.Vestigia.metainfo.xml"
 version-files = ["meson.build", "vestigia/__init__.py"]
 
-# Screenshots come with the first feature worth showing (M1, the day
-# view), taken from recorded server answers, never live data.
+# Shots use the answers recorded from a real Dawarich server
+# (tests/data/dawarich/, docs/dev-environment.md), never live data; map
+# tiles come from OpenStreetMap.
+[screenshots]
+env = { VESTIGIA_DEMO_DATA = "{root}/tests/data/dawarich" }
+expose = ["{root}/tests/data/dawarich"]
+delay = 6
+
+[[screenshots.shot]]
+name = "day"
+caption = "The tracks and visits of a day on the map"
+
+[[screenshots.shot]]
+name = "summary"
+caption = "Distance, time moving and visits of the day"
+actions = ["app.show-summary"]

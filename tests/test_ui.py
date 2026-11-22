@@ -311,3 +311,15 @@ def test_old_server_banner(app):
     run_until(lambda: page.server_banner.get_revealed())
     assert "1.17.0" in page.server_banner.get_title()
     window.destroy()
+
+
+def test_show_summary_action(app):
+    from vestigia.window import Window
+    window = Window(app, new_account(configured=True))
+    window.present()
+    iterate()
+    page = window.history
+    before = page.split.get_show_sidebar()
+    app.activate_action("show-summary", None)
+    assert page.split.get_show_sidebar() != before
+    window.destroy()

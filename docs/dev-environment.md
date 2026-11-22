@@ -39,6 +39,16 @@ settings (allowed domains).
   (`docker compose -f dev/dawarich/compose.yml down -v`, then `up.sh`),
   otherwise ids and the recalculation answer differ.
 - Never replace missing live answers with invented samples.
+- Demo mode: `VESTIGIA_DEMO_DATA=tests/data/dawarich` makes the app
+  answer from these recordings (`vestigia/demo.py`), open the recorded
+  day 2024-04-21, keep the key in memory and its settings under
+  `$XDG_CACHE_HOME/vestigia/demo/`. The store screenshots in
+  `release.toml` use it (`day`, and `summary` through the action
+  `app.show-summary`, also F9). Checked locally at 360×720:
+
+  ```sh
+  ../phosh-toolkit/scripts/screenshot.sh -e VESTIGIA_DEMO_DATA=$PWD/tests/data/dawarich -- /usr/bin/python3.12 -m vestigia
+  ```
 
 # Local Dawarich server
 
