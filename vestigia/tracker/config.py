@@ -32,6 +32,10 @@ class TrackingSettings:
     tracker_id: str = "vg"
     # Tracking was on when the app last ran (resumed after a restart).
     tracking: bool = False
+    # Inhibit suspend while tracking (docs/decisions/background-tracking.md).
+    keep_awake: bool = True
+    # Start `vestigia --background` at login (Background portal).
+    autostart: bool = False
 
     def custom_target(self):
         if not self.target_url:

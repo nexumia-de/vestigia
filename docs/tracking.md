@@ -131,27 +131,20 @@ GTK so they run in tests with recorded fixes and recorded server answers.
 None yet: the end-to-end walk (issue 17) is on the
 [owner checks](owner-checks.md).
 
-# Background operation on Phosh (open)
+# Background operation on Phosh
 
-The phone is only useful as a tracker if recording continues with the
-window closed and the screen off. Known obstacles, all to be checked on
-the device:
-
-- **Suspend**: Phosh phones suspend shortly after the screen turns off
-  unless something inhibits it. The Inhibit portal can block
-  suspend[^portal-inhibit], at a battery cost; without it there are
-  gaps. Whether the modem or GNSS can wake the phone is unknown.
-- **Running without a window**: a `GApplication` can `hold()` itself
-  after the last window closes. Starting at login needs the Background
-  portal's autostart[^portal-background]; whether Phosh shows its
-  "running in background" permission dialog is unknown.
-- **GNSS power**: a permanently open GNSS session drains the battery;
-  `significant` mode should use coarser fixes or longer intervals.
-- **Indicator**: the user must always see that tracking is on (a
-  persistent notification or the location indicator in the top bar).
-
-These choices become a decision record in M3 after measurements on the
-phone (issues labelled `on device`).
+Built in `vestigia/tracking/background.py` and `vestigia/main.py`
+(`--background`, resume when `tracking.json` says tracking was on; a
+notification "Recording your location" with the status line and a Stop
+button (`app.stop-tracking`) while tracking, replaced when the line
+changes and withdrawn on stop;
+Preferences → Tracking → In the Background: "Keep the Phone Awake While
+Tracking", "Start at Login"). Decided in
+[background tracking](decisions/background-tracking.md):
+hold the application while tracking, inhibit suspend (setting, on by
+default), a notification with Stop, resume after a restart, optional
+start at login through the Background portal. Measurements on the
+phone (gaps, battery) are on the [owner checks](owner-checks.md).
 
 [^portal-location]: XDG Desktop Portal, Location
 [^portal-background]: XDG Desktop Portal, Background

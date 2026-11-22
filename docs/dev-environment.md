@@ -42,6 +42,10 @@ settings (allowed domains).
   `dev/owntracks/compose.yml` (image pinned by digest, HTTP on
   `127.0.0.1:8083`, MQTT off); `python3 dev/owntracks/record.py` records
   its answers into `tests/data/owntracks/`. Checked 2026-11-22.
+- Where the dev server cannot produce an answer (countries and cities
+  need reverse geocoding), `tests/data/documented/` holds the examples
+  of Dawarich's own OpenAPI description, each marked
+  `"documented": {"recorded": false, "source": …}`; never as recordings.
 - Never replace missing live answers with invented samples.
 - Demo mode: `VESTIGIA_DEMO_DATA=tests/data/dawarich` makes the app
   answer from these recordings (`vestigia/demo.py`), open the recorded

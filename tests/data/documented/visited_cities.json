@@ -1,0 +1,14 @@
+{
+ "documented": {
+  "recorded": false,
+  "source": "Dawarich 1.18.1 swagger/v1/swagger.yaml, example of GET /api/v1/countries/visited_cities (200)",
+  "note": "Not a server answer: the dev server has no reverse geocoding, so its recorded answer is empty (tests/data/dawarich/visited_cities.json)."
+ },
+ "body": {"data": [
+  {"country": "Germany", "cities": [
+   {"city": "Berlin", "points": 4394, "timestamp": 1724868369, "stayed_for": 24490},
+   {"city": "Munich", "points": 2156, "timestamp": 1724782369, "stayed_for": 12450}]},
+  {"country": "France", "cities": [
+   {"city": "Paris", "points": 3267, "timestamp": 1724695969, "stayed_for": 18720}]}
+ ]}
+}

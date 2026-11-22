@@ -1,5 +1,6 @@
 # Weekly pull requests for new versions of the GitHub Actions used here
-# and of the images of the local Dawarich server (dev/dawarich). Flatpak
+# and of the images of the local Dawarich server (dev/dawarich) and
+# OwnTracks Recorder (dev/owntracks). Flatpak
 # modules are updated by the update-check workflow instead (see
 # phosh-toolkit docs/dependency-updates.md).
 version: 2
@@ -13,5 +14,9 @@ updates:
         patterns: ['*']
   - package-ecosystem: docker-compose
     directory: /dev/dawarich
+    schedule:
+      interval: weekly
+  - package-ecosystem: docker-compose
+    directory: /dev/owntracks
     schedule:
       interval: weekly

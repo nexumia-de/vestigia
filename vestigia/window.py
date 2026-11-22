@@ -38,6 +38,7 @@ class Window(Adw.ApplicationWindow):
 
     def menu_model(self):
         menu = Gio.Menu()
+        menu.append("Statistics", "app.statistics")
         menu.append("Export Day as GPX…", "app.export-gpx")
         menu.append("Preferences", "app.preferences")
         menu.append(f"About {NAME}", "app.about")
@@ -110,6 +111,12 @@ class Window(Adw.ApplicationWindow):
         them over."""
         self.tracker.reload()
 
+    def show_statistics(self):
+        if not self.account.configured:
+            return
+        from vestigia.stats.page import StatsPage
+        self.nav.push(StatsPage(self))
+
     def export_gpx(self):
         from datetime import date
 
@@ -119,6 +126,18 @@ class Window(Adw.ApplicationWindow):
 
     def toast(self, title):
         self.toasts.add_toast(Adw.Toast(title=title))
+
+    def toast_with_undo(self, title, undo=None, on_dismissed=None):
+        """A toast; with `undo`, an Undo button. `on_dismissed` runs when
+        it closes, whether or not Undo was pressed."""
+        toast = Adw.Toast(title=title)
+        if undo is not None:
+            toast.set_button_label("Undo")
+            toast.connect("button-clicked", lambda *_: undo())
+        if on_dismissed is not None:
+            toast.connect("dismissed", lambda *_: on_dismissed())
+        self.toasts.add_toast(toast)
+        return toast
 
     def save_settings(self):
         self.settings_store.save(self.settings)

@@ -47,8 +47,9 @@ tests; nightly builds install on the phone from the shared repository.
 **Exit criteria**: account setup with e-mail/password (2FA) or API key,
 key in the Secret portal; OSM map with attribution, User-Agent and tile
 cache from shared toolkit code; tracks of the selected day with
-previous/next day and a date picker; day summary and visits in an
-`AdwNavigationSplitView` sidebar that collapses on the phone; cached
+previous/next day and a date picker; day summary and visits in a
+sidebar that collapses on the phone (an `AdwOverlaySplitView`, one
+navigation view per window); cached
 days open offline; empty, error and offline states; checked at 360×720.
 
 # M2 – Tracking while the app is open
@@ -89,15 +90,16 @@ resumes after reboot when it was on.
 place; statistics per year/month with countries and cities; date ranges
 and a calendar that marks days with data.
 
-# M5 – Extras
+# M5 – Extras (not planned)
 
 [Milestone M5](https://github.com/nexumia-de/vestigia/milestone/6)
 
-**Goal**: richer map layers once the core works well.
-
-**Exit criteria**: hexagon or "fog of war" layer; photos along a track;
-family members' positions, each only if the server has the feature
-enabled.
+Closed on 2026-11-22 without work: the hexagon / "fog of war" layer,
+photos along a track and family members' positions each depend on a
+server feature most self-hosted instances do not enable, and none was
+asked for by a user. They come back as new issues when someone needs
+them; the endpoints are listed in [Dawarich API](dawarich-api.md).
+The same holds for the backlog (notes, editing points, Traccar uploads).
 
 # Risks
 
@@ -108,8 +110,8 @@ enabled.
   days in October 2026). Pin a minimum server version, test against
   recorded answers, and fail visibly on unknown responses.
 - **Large ranges**: GeoJSON for months of tracks can be megabytes on the
-  phone; the vector tile endpoints are the way out (open question 6 in
-  [Dawarich API](dawarich-api.md)).
+  phone; ranges stop at a month, the vector tiles are the way out
+  ([range view](decisions/range-view.md)).
 - **Personal data**: a bug that logs the key or positions leaks the
   user's movements; review logging and screenshots with recorded demo
   data only.
