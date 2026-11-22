@@ -45,7 +45,45 @@
     <control>keyboard</control>
     <control>touch</control>
   </supports>
+  <screenshots>
+    <screenshot type="default">
+      <caption>The tracks and visits of a day on the map</caption>
+      <image>https://github.com/nexumia-de/vestigia/releases/download/v0.2.0/day-phone-light.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>The tracks and visits of a day on the map</caption>
+      <image>https://github.com/nexumia-de/vestigia/releases/download/v0.2.0/day-desktop-light.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Distance, time moving and visits of the day</caption>
+      <image>https://github.com/nexumia-de/vestigia/releases/download/v0.2.0/summary-phone-light.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Distance, time moving and visits of the day</caption>
+      <image>https://github.com/nexumia-de/vestigia/releases/download/v0.2.0/summary-desktop-light.png</image>
+    </screenshot>
+  </screenshots>
   <releases>
+    <release version="0.2.0" date="2026-11-22">
+      <description>
+        <ul>
+          <li>Connect to your Dawarich server with your e-mail and password (including two-factor codes) or an API key, kept in the keyring.</li>
+          <li>Tracking goes on with the window closed and the phone asleep, resumes after a restart and can start at login.</li>
+          <li>A sidebar shows the day's distance, time moving and visits; tap a visit to find it on the map.</li>
+          <li>See the tracks and visits of a day on the map and move between days.</li>
+          <li>Export the points recorded on your phone for a day as a GPX file.</li>
+          <li>A map of OpenStreetMap with a button to show your own location.</li>
+          <li>Days you have opened are saved, so they show without network too.</li>
+          <li>See a whole week or month on the map; the calendar marks the days that have data.</li>
+          <li>Statistics: distance per year and month, and the countries and cities you visited.</li>
+          <li>A notification shows while your location is recorded, with a button to stop.</li>
+          <li>Tracking settings: how often to record, where to send points (your Dawarich account or any Overland or OwnTracks server) and how long to keep them, shared with your other devices through Dawarich.</li>
+          <li>Record your position while Travel Log is open and upload it to your Dawarich server or another Overland or OwnTracks server; today's track grows live on the map.</li>
+          <li>Confirm, decline or rename visits and choose their place, with Undo.</li>
+          <li>Clear messages for days without data, an unreachable server, a rejected key and a server that is too old.</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.1.0" date="2026-11-16">
       <description>
         <p>First version: the empty app, ready to install, without a server connection yet.</p>
