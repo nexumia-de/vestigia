@@ -1,6 +1,7 @@
 # Directory Update Log
 
 ## 2026-11-22
+* **Update**: Tracking without a window (#19): the application holds itself and inhibits suspend while tracking (`vestigia/tracking/background.py`), resumes tracking at start when it was on, `vestigia --background` for login, "Start at Login" through the Background portal. The location wrapper is subclassed to start without a parent window (owner checks).
 * **Update**: Decision [background tracking](decisions/background-tracking.md) (#18), by best practice without device measurements: `hold()` while tracking, suspend inhibited through the Inhibit portal (on by default), notification with Stop, resume after restart, optional autostart through the Background portal. Measurements moved to the [owner checks](owner-checks.md).
 * **Update**: End-to-end walk on the phone (#17): steps for Dawarich and an OwnTracks Recorder moved to the [owner checks](owner-checks.md); [tracking](tracking.md) has a place for the results.
 * **Update**: GPX export (#30): "Export Day as GPX…" in the main menu writes the day's own points as GPX 1.1 through the file chooser portal; validated against the official schema in tests (downloaded in CI, git-ignored locally). See [tracking](tracking.md).

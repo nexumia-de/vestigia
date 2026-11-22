@@ -7,8 +7,9 @@ import time
 import gi
 
 gi.require_version("Xdp", "1.0")
-from gi.repository import GObject, Xdp  # noqa: E402
-from phosh_toolkit.location import Location  # noqa: E402
+gi.require_version("XdpGtk4", "1.0")
+from gi.repository import GObject, Xdp, XdpGtk4  # noqa: E402
+from phosh_toolkit.location import Location as ToolkitLocation  # noqa: E402
 
 from vestigia.tracker.fix import Fix  # noqa: E402
 
@@ -16,6 +17,15 @@ PRECISE = "precise"
 SIGNIFICANT = "significant"
 # Significant mode: the portal reports a move only from this distance.
 SIGNIFICANT_DISTANCE_M = 100
+
+
+class Location(ToolkitLocation):
+    """The toolkit's wrapper, also without a window: started at login the
+    app has none, and libportal accepts no parent (owner checks: a
+    toolkit option would replace this)."""
+
+    def _parent(self, window):
+        return XdpGtk4.parent_new_gtk(window) if window is not None else None
 
 
 class Source(GObject.Object):

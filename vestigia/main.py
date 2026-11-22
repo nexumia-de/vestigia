@@ -6,7 +6,7 @@ import gi
 
 gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
-from gi.repository import Adw, Gdk, Gio, Gtk  # noqa: E402
+from gi.repository import Adw, Gdk, Gio, GLib, Gtk  # noqa: E402
 
 from vestigia import (APP_ID, NAME, NIGHTLY, REPO_URL,  # noqa: E402
                       SUPPORT_URL, VERSION_LABEL)
@@ -17,7 +17,10 @@ log = logging.getLogger("vestigia")
 class Application(Adw.Application):
     def __init__(self):
         super().__init__(application_id=APP_ID,
-                         flags=Gio.ApplicationFlags.DEFAULT_FLAGS)
+                         flags=Gio.ApplicationFlags.HANDLES_COMMAND_LINE)
+        self.add_main_option("background", 0, GLib.OptionFlags.NONE,
+                             GLib.OptionArg.NONE,
+                             "Start without a window and resume tracking", None)
         self.settings_store = None
         self.account = None
         self.tracker = None
@@ -62,6 +65,20 @@ class Application(Adw.Application):
         from vestigia.tracker import config
         from vestigia.tracking.service import Tracker
         self.tracker = Tracker(self.account, config.Store())
+        from vestigia.tracking.background import Keeper
+        self.keeper = Keeper(self, self.tracker)
+
+    def do_command_line(self, command_line):
+        if command_line.get_options_dict().contains("background"):
+            # At login: no window; resume tracking if it was on.
+            self.resume_tracking(None)
+        else:
+            self.activate()
+        return 0
+
+    def resume_tracking(self, window):
+        if self.tracker.settings_store.load().tracking and not self.tracker.running:
+            self.tracker.start(window)
 
     def do_activate(self):
         from vestigia.window import Window
@@ -71,6 +88,7 @@ class Application(Adw.Application):
             if NIGHTLY:
                 window.add_css_class("devel")
         window.present()
+        self.resume_tracking(window)
 
     def _window(self):
         return self.props.active_window

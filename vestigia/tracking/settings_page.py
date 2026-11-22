@@ -85,6 +85,21 @@ class TrackingPage(Adw.PreferencesPage):
             self.custom.add(row)
         self.add(self.custom)
 
+        background = Adw.PreferencesGroup(title="In the Background")
+        self.awake_row = Adw.SwitchRow(
+            title="Keep the Phone Awake While Tracking",
+            subtitle="Otherwise the phone records nothing while it sleeps; "
+                     "uses more power",
+            active=s.keep_awake)
+        self.autostart_row = Adw.SwitchRow(
+            title="Start at Login",
+            subtitle="Tracking that was on goes on after a restart",
+            active=s.autostart)
+        self.autostart_row.connect("notify::active", self._on_autostart)
+        background.add(self.awake_row)
+        background.add(self.autostart_row)
+        self.add(background)
+
         storage = Adw.PreferencesGroup(title="On This Phone")
         self.keep_row = spin("Keep Points", "Days, also after upload, for GPX "
                              "export", s.keep_days, 1, 3650, 1)
@@ -102,12 +117,32 @@ class TrackingPage(Adw.PreferencesPage):
         for row in (self.distance_row, self.interval_row, self.accuracy_row,
                     self.batch_row, self.keep_row):
             row.connect("notify::value", self._changed)
-        for row in (self.auto_row, self.sync_row):
+        for row in (self.auto_row, self.sync_row, self.awake_row):
             row.connect("notify::active", self._changed)
         for row in (self.url_row, self.user_row, self.secret_row):
             row.connect("changed", self._changed)
         self._update_custom()
         sync.pull(self.account, self.store, self._pulled)
+
+    def _on_autostart(self, row, _pspec):
+        if self._loading:
+            return
+        from vestigia.tracking.background import request_autostart
+        enable = row.get_active()
+
+        def done(ok, message):
+            if not ok and enable:
+                self._loading = True
+                row.set_active(False)
+                self._loading = False
+                self.window.toast(f"Start at login is not available: {message}")
+                return
+            s = self.store.load()
+            s.autostart = enable and ok
+            self.store.save(s)
+            self.settings.autostart = s.autostart
+
+        request_autostart(self.window, enable, done)
 
     def _update_custom(self):
         custom = self.target_keys[self.target_row.get_selected()] == config.TARGET_CUSTOM
@@ -134,7 +169,8 @@ class TrackingPage(Adw.PreferencesPage):
     def _changed(self, *_):
         if self._loading:
             return
-        s = self.settings
+        # Fresh from disk: the tracker writes `tracking` meanwhile.
+        s = self.settings = self.store.load()
         s.mode = self.mode_keys[self.mode_row.get_selected()]
         s.distance = int(self.distance_row.get_value())
         s.interval = int(self.interval_row.get_value())
@@ -143,6 +179,7 @@ class TrackingPage(Adw.PreferencesPage):
         s.upload_automatically = self.auto_row.get_active()
         s.keep_days = int(self.keep_row.get_value())
         s.sync_with_server = self.sync_row.get_active()
+        s.keep_awake = self.awake_row.get_active()
         s.target_kind = self.target_keys[self.target_row.get_selected()]
         s.target_protocol = self.protocol_keys[self.protocol_row.get_selected()]
         s.target_url = self.url_row.get_text().strip()

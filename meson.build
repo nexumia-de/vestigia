@@ -53,6 +53,7 @@ python.install_sources(
   'vestigia/tracker/uploader.py',
   'vestigia/secrets.py',
   'vestigia/tracking/__init__.py',
+  'vestigia/tracking/background.py',
   'vestigia/tracking/export.py',
   'vestigia/tracking/service.py',
   'vestigia/tracking/settings_page.py',

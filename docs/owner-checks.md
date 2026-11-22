@@ -79,7 +79,7 @@ measurements. On the phone, with the nightly:
 - [ ] Turn "Start at Login" on: does Phosh show the Background portal's
   dialog? After a reboot, does tracking resume without opening the app?
 
-## Toolkit follow-ups (issues 5, 7 and 12)
+## Toolkit follow-ups (issues 5, 7, 12 and 19)
 
 - [ ] phosh-toolkit (finding of issue 7, possibly the cause of the
   toolkit's unexplained UI test hangs in CI): under Xvfb a visible
@@ -92,6 +92,10 @@ measurements. On the phone, with the nightly:
   longitude and accuracy only, though the portal also sends altitude,
   speed and the fix time; with those in the signal Vestigia's points
   could carry them (Overland `altitude`/`speed`, GPX `<ele>`).
+- [ ] phosh-toolkit (issue 19): `location.Location.start()` needs a
+  window for the portal's parent; Vestigia subclasses it to pass none
+  when started at login (`vestigia/tracker/source.py`). A `window=None`
+  case in the toolkit would remove the subclass.
 - [ ] phosh-toolkit: give `Keyring` a public way to ask whether a
   secret only lives in memory (Vestigia reads `_memory` in
   `vestigia/secrets.py`); then switch Vestigia to it.
