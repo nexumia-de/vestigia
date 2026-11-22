@@ -1,6 +1,7 @@
 # Directory Update Log
 
 ## 2026-11-22
+* **Update**: Gaps and battery with the screen off (#21): the measurement needs the phone; steps and where to write the numbers are in the [owner checks](owner-checks.md) ("Background tracking on the phone").
 * **Update**: Tracking indicator (#20): a notification with the status line and Stop while tracking (`app.stop-tracking`), sent again only when its text changes, withdrawn on stop.
 * **Update**: Tracking without a window (#19): the application holds itself and inhibits suspend while tracking (`vestigia/tracking/background.py`), resumes tracking at start when it was on, `vestigia --background` for login, "Start at Login" through the Background portal. The location wrapper is subclassed to start without a parent window (owner checks).
 * **Update**: Decision [background tracking](decisions/background-tracking.md) (#18), by best practice without device measurements: `hold()` while tracking, suspend inhibited through the Inhibit portal (on by default), notification with Stop, resume after restart, optional autostart through the Background portal. Measurements moved to the [owner checks](owner-checks.md).

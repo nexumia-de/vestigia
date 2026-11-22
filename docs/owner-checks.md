@@ -62,7 +62,7 @@ GeoClue, GNSS and a real network are not.
 - [ ] Write the results under "Results on the phone" in
   [tracking](tracking.md).
 
-## Background tracking on the phone (issues 18 and 21)
+## Background tracking on the phone (issues 18, 19, 20 and 21)
 
 The [decision](decisions/background-tracking.md) was taken without
 measurements. On the phone, with the nightly:
@@ -76,6 +76,9 @@ measurements. On the phone, with the nightly:
   under "Results on the phone" in [tracking](tracking.md). If the drain
   with the phone kept awake is unacceptable, change the default in
   `vestigia/tracker/config.py` and the decision.
+- [ ] The notification "Recording your location" shows on the lock
+  screen and in the notification list; its Stop button stops tracking.
+- [ ] Close M3 in the milestones once the numbers are acceptable.
 - [ ] Turn "Start at Login" on: does Phosh show the Background portal's
   dialog? After a reboot, does tracking resume without opening the app?
 
