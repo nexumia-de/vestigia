@@ -9,8 +9,8 @@ sources:
     title: XDG Desktop Portal, Secret
     url: https://flatpak.github.io/xdg-desktop-portal/docs/doc-org.freedesktop.portal.Secret.html
   - id: keyring
-    title: phosh-toolkit lib/phosh_toolkit/keyring.py (v0.7.0)
-    url: https://github.com/nexumia-de/phosh-toolkit/blob/v0.7.0/lib/phosh_toolkit/keyring.py
+    title: phosh-toolkit lib/phosh_toolkit/keyring.py (v0.8.0)
+    url: https://github.com/nexumia-de/phosh-toolkit/blob/v0.8.0/lib/phosh_toolkit/keyring.py
 ---
 
 # Status
@@ -49,4 +49,4 @@ locked or, on unusual setups, missing.
 - Every start with a locked keyring asks for the key again (by design).
 
 [^portal-secret]: XDG Desktop Portal, Secret
-[^keyring]: phosh-toolkit lib/phosh_toolkit/keyring.py (v0.7.0)
+[^keyring]: phosh-toolkit lib/phosh_toolkit/keyring.py (v0.8.0)

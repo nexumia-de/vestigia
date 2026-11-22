@@ -34,7 +34,7 @@ location portal ──fix──▶ filter ──point──▶ store (SQLite) �
 ```
 
 1. **Source** (`vestigia/tracker/source.py`): the XDG location portal
-   (GeoClue behind it) through `phosh_toolkit.location` (toolkit v0.7.0).
+   (GeoClue behind it) through `phosh_toolkit.location` (toolkit v0.8.0).
    Precise mode asks for `EXACT` accuracy so GeoClue uses the GNSS
    receiver[^portal-location] and lets every move through to the filter;
    significant mode asks for street level and moves of 100 m or more.

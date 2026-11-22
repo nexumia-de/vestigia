@@ -161,8 +161,24 @@ def test_preferences_keep_style(app):
 
 def test_actions(app):
     for name in ("about", "preferences", "quit", "toggle-tracking",
-                 "stop-tracking", "export-gpx", "show-summary"):
+                 "stop-tracking", "export-gpx", "show-summary",
+                 "report-problem"):
         assert app.lookup_action(name) is not None
+
+
+def test_report_a_problem_is_in_the_menu(app):
+    from vestigia.window import Window
+    menu = Window(app, new_account()).menu_model()
+    actions = [menu.get_item_attribute_value(i, "action").get_string()
+               for i in range(menu.get_n_items())]
+    assert actions.index("app.report-problem") == actions.index("app.about") - 1
+
+
+def test_about_issue_link_is_the_filled_form(app):
+    url = app.about_dialog().get_issue_url()
+    assert url.startswith("https://github.com/nexumia-de/vestigia/issues/new?")
+    assert "template=bug.yml" in url
+    assert "version=" in url
 
 
 def test_map_with_location_button(app):
