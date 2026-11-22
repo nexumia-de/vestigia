@@ -1,9 +1,10 @@
-"""The history page once an account is saved. Shows who is connected
-until the day view (issue 7) takes its place."""
+"""The history page once an account is saved: the map, until the day
+view (issue 7) fills it."""
 from gi.repository import Adw
 from phosh_toolkit import tasks
 
-from vestigia import APP_ID, NAME
+from vestigia import NAME
+from vestigia.map.view import MapView
 
 
 class HistoryPage(Adw.NavigationPage):
@@ -14,13 +15,11 @@ class HistoryPage(Adw.NavigationPage):
         header = Adw.HeaderBar()
         header.pack_end(window.menu_button())
         toolbar.add_top_bar(header)
-        self.status = Adw.StatusPage(icon_name=f"{APP_ID}-symbolic",
-                                     title="Connected")
-        toolbar.set_content(self.status)
+        self.map = MapView(window)
+        toolbar.set_content(self.map)
         self.set_child(toolbar)
         tasks.run(window.account.client().me, self._on_me)
 
     def _on_me(self, user, error):
         if error is None:
             self.window.account.email = user.get("email", "")
-            self.status.set_description(self.window.account.email)

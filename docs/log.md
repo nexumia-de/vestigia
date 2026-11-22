@@ -1,6 +1,7 @@
 # Directory Update Log
 
 ## 2026-11-22
+* **Update**: Map (#6): phosh-toolkit pinned at v0.7.0; libshumate and protobuf-c now come from the toolkit's `flatpak/libshumate.yml` through the git submodule `toolkit/` (test: submodule and manifest pin the same commit). `vestigia/map/` (OSM tiles with attribution, User-Agent, libshumate's tile cache, track and marker layers, fit to bounds, "Show My Location" with `phosh_toolkit.location`). [Dependencies](dependencies.md) and [map decision](decisions/map-libshumate.md) updated.
 * **Update**: Account setup (#4): `vestigia/api/` (client with health and version check, login with 2FA, users/me, history calls; `recorded.py` answers from `tests/data/dawarich/` for tests and demo), `vestigia/account/` (setup page, two-factor page, log out with Undo); every request sends `Authorization: Bearer` and the `User-Agent`. Screens in [design](design.md); checked at 360×720 and 1000×700.
 * **Update**: API key storage (#5): `vestigia/secrets.py` keeps the key in the keyring through `phosh_toolkit.keyring`; the settings gain `server_url` only; a banner shows when the keyring is locked or missing. Decision [API key storage](decisions/api-key-storage.md).
 * **Update**: Nightly publishing (#3): the remaining steps (phosh-apps `apps.txt`, optional `PUBLISH_TOKEN`, install on the phone) are in [owner checks](owner-checks.md); the workflow already builds and publishes the nightly.

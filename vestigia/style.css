@@ -12,3 +12,27 @@
   --accent-bg-color: #6741d9;
   --accent-fg-color: #ffffff;
 }
+
+/* Tracks on the map: the accent over a casing in the accent's text
+   colour, read by vestigia/map/view.py. The named colour serves GTK
+   before 4.16, the variable everything newer. */
+.vestigia-track {
+  color: @accent_bg_color;
+  color: var(--accent-bg-color);
+}
+
+.vestigia-track-casing {
+  color: @accent_fg_color;
+  color: var(--accent-fg-color);
+}
+
+/* Visits and the own location as symbolic icons on the map. */
+.vestigia-marker {
+  color: @accent_bg_color;
+  color: var(--accent-bg-color);
+}
+
+.vestigia-me {
+  color: @blue_3;
+  color: var(--blue-3);
+}

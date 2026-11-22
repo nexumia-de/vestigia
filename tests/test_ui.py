@@ -158,3 +158,23 @@ def test_preferences_keep_style(app):
 def test_actions(app):
     for name in ("about", "preferences", "quit"):
         assert app.lookup_action(name) is not None
+
+
+def test_map_with_location_button(app):
+    from vestigia.window import Window
+    window = Window(app, new_account(configured=True))
+    window.present()
+    iterate()
+    view = window.nav.get_visible_page().map
+    button = view.locate_button
+    assert button.get_tooltip_text() == "Show My Location"
+    # A fix from the portal (none in tests) shows the own marker.
+    view._follow = True
+    view._on_location(view.location, 37.1686, -3.5962, 5.0)
+    assert view.me is not None
+    assert abs(view.me.get_latitude() - 37.1686) < 1e-6
+    view.add_track([(37.17, -3.56), (37.171, -3.55)])
+    assert len(view.tracks) == 2
+    view.clear()
+    assert view.tracks == []
+    window.destroy()
