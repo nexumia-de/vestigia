@@ -48,22 +48,29 @@
   <screenshots>
     <screenshot type="default">
       <caption>The tracks and visits of a day on the map</caption>
-      <image>https://github.com/nexumia-de/vestigia/releases/download/v0.2.0/day-phone-light.png</image>
+      <image>https://github.com/nexumia-de/vestigia/releases/download/v0.3.0/day-phone-light.png</image>
     </screenshot>
     <screenshot>
       <caption>The tracks and visits of a day on the map</caption>
-      <image>https://github.com/nexumia-de/vestigia/releases/download/v0.2.0/day-desktop-light.png</image>
+      <image>https://github.com/nexumia-de/vestigia/releases/download/v0.3.0/day-desktop-light.png</image>
     </screenshot>
     <screenshot>
       <caption>Distance, time moving and visits of the day</caption>
-      <image>https://github.com/nexumia-de/vestigia/releases/download/v0.2.0/summary-phone-light.png</image>
+      <image>https://github.com/nexumia-de/vestigia/releases/download/v0.3.0/summary-phone-light.png</image>
     </screenshot>
     <screenshot>
       <caption>Distance, time moving and visits of the day</caption>
-      <image>https://github.com/nexumia-de/vestigia/releases/download/v0.2.0/summary-desktop-light.png</image>
+      <image>https://github.com/nexumia-de/vestigia/releases/download/v0.3.0/summary-desktop-light.png</image>
     </screenshot>
   </screenshots>
   <releases>
+    <release version="0.3.0" date="2026-11-23">
+      <description>
+        <ul>
+          <li>"Report a Problem…" in the main menu sends your problem or idea to the developers as a GitHub issue, with your own token or through GitHub's issue form in the browser.</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.2.0" date="2026-11-22">
       <description>
         <ul>
